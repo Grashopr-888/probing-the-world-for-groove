@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you reference this work, please cite the thesis (and the ISMIR 2025 LBD where appropriate)."
+title: "Probing the World for Groove — research website & code"
+abstract: >-
+  Editorial research website and data-extraction code for a comparative study of transfer
+  learning for drum-audio style classification, comparing a task-specific CNN against a frozen,
+  AudioSet-pretrained PaSST transformer across 18,264 two-bar clips and 74 style classes.
+type: software
+authors:
+  - family-names: Eriksen
+    given-names: Trent
+  - family-names: van der Heide
+    given-names: Edwin
+  - family-names: Saunders
+    given-names: Robert
+url: "https://grashopr-888.github.io/probing-the-world-for-groove/"
+repository-code: "https://github.com/Grashopr-888/probing-the-world-for-groove"
+license: CC-BY-4.0
+preferred-citation:
+  type: thesis
+  title: "Probing the World for Groove: A Comparative Study of Transfer Learning for Drum Audio Style Classification"
+  authors:
+    - family-names: Eriksen
+      given-names: Trent
+  institution:
+    name: "Leiden University (Leiden Institute of Advanced Computer Science)"
+  thesis-type: "MSc thesis, Media Technology"
+  year: 2025
+  month: 6
