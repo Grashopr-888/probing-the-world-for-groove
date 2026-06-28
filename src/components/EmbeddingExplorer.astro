@@ -1,0 +1,151 @@
+---
+import { SITE } from '../lib/site';
+const base = SITE.basePath;
+---
+<div class="emb" id="emb-explorer" data-base={base}>
+  <div class="emb__bar">
+    <div class="emb__models" role="group" aria-label="Model">
+      <button type="button" class="emb__model is-on" data-model="passt">PaSST</button>
+      <button type="button" class="emb__model" data-model="cnn">CNN</button>
+    </div>
+    <label class="emb__perp">
+      <span>Perplexity <strong id="emb-perp-val">30</strong></span>
+      <input type="range" id="emb-perp" min="0" max="6" step="1" value="2" aria-label="t-SNE perplexity" />
+    </label>
+    <button type="button" class="emb__reset" id="emb-reset" hidden>Reset zoom</button>
+  </div>
+
+  <div class="emb__stage">
+    <div id="emb-plot" class="emb__plot" role="img" aria-label="Interactive t-SNE scatter of model embeddings, coloured by primary drum style."></div>
+    <button type="button" class="emb__load" id="emb-load">
+      <span class="emb__load-play" aria-hidden="true">▶</span>
+      Load the interactive embeddings
+      <span class="emb__load-note">Plotly · ~0.3&nbsp;MB · 1,827 points</span>
+    </button>
+  </div>
+
+  <p class="emb__hint">
+    Drag to zoom, double-click to reset, click a style in the legend to hide it. Move the slider to
+    re-project the same embeddings at a different t-SNE perplexity.
+  </p>
+</div>
+
+<script>
+  const root = document.getElementById('emb-explorer');
+  if (root) {
+    const BASE = root.dataset.base || '';
+    const PERPS = [5, 15, 30, 40, 50, 75, 100];
+    const cache: Record<string, any> = {};
+    let model = 'passt';
+    let k = 2;
+    let loaded = false;
+
+    const plotEl = document.getElementById('emb-plot') as HTMLElement;
+    const perpVal = document.getElementById('emb-perp-val')!;
+    const resetBtn = document.getElementById('emb-reset') as HTMLButtonElement;
+
+    function loadPlotly(): Promise<void> {
+      if ((window as any).Plotly) return Promise.resolve();
+      return new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.plot.ly/plotly-2.35.2.min.js';
+        s.onload = () => res();
+        s.onerror = () => rej(new Error('Plotly failed to load'));
+        document.head.appendChild(s);
+      });
+    }
+    async function getData(m: string) {
+      if (cache[m]) return cache[m];
+      const r = await fetch(`${BASE}/data/embeddings-${m}.json`);
+      cache[m] = await r.json();
+      return cache[m];
+    }
+    function buildTraces(d: any, ki: number) {
+      const groups: Record<string, { x: number[]; y: number[]; cd: any[] }> = {};
+      for (const pt of d.points) {
+        const xy = pt.xy[ki];
+        if (!xy) continue;
+        (groups[pt.p] ||= { x: [], y: [], cd: [] });
+        groups[pt.p].x.push(xy[0]);
+        groups[pt.p].y.push(xy[1]);
+        groups[pt.p].cd.push([pt.p, pt.s || '(none)', pt.f]);
+      }
+      return Object.keys(groups).sort().map((name) => ({
+        type: 'scattergl', mode: 'markers', name,
+        x: groups[name].x, y: groups[name].y, customdata: groups[name].cd,
+        marker: { size: 5, color: d.colorMap[name] || '#888', opacity: 0.82, line: { width: 0 } },
+        hovertemplate: '<b>%{customdata[2]}</b><br>primary: %{customdata[0]}<br>secondary: %{customdata[1]}<extra></extra>',
+      }));
+    }
+    function layout(d: any) {
+      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return {
+        title: { text: `${model.toUpperCase()} embeddings · t-SNE (perplexity ${PERPS[k]})`, font: { size: 15 } },
+        height: 560, margin: { l: 36, r: 8, t: 40, b: 36 },
+        xaxis: { zeroline: false, showgrid: false, title: 't-SNE 1' },
+        yaxis: { zeroline: false, showgrid: false, title: 't-SNE 2' },
+        legend: { font: { size: 10 }, itemsizing: 'constant' },
+        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: dark ? '#c8bfb0' : '#4b443b', family: 'inherit' },
+        hoverlabel: { font: { family: 'inherit' } },
+      };
+    }
+    async function render() {
+      const d = await getData(model);
+      const Plotly = (window as any).Plotly;
+      Plotly.react(plotEl, buildTraces(d, k), layout(d), { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d'] });
+      resetBtn.hidden = false;
+    }
+    async function activate() {
+      if (loaded) return;
+      const btn = document.getElementById('emb-load') as HTMLButtonElement;
+      btn.textContent = 'Loading…';
+      try {
+        await loadPlotly();
+        loaded = true;
+        btn.remove();
+        await render();
+      } catch (e) {
+        btn.textContent = 'Could not load Plotly (offline?)';
+      }
+    }
+
+    document.getElementById('emb-load')!.addEventListener('click', activate);
+    document.querySelectorAll('.emb__model').forEach((b) =>
+      b.addEventListener('click', async () => {
+        document.querySelectorAll('.emb__model').forEach((x) => x.classList.remove('is-on'));
+        b.classList.add('is-on');
+        model = (b as HTMLElement).dataset.model!;
+        if (loaded) await render();
+      }));
+    document.getElementById('emb-perp')!.addEventListener('input', async (e) => {
+      k = +(e.target as HTMLInputElement).value;
+      perpVal.textContent = String(PERPS[k]);
+      if (loaded) await render();
+    });
+    resetBtn.addEventListener('click', () => (window as any).Plotly?.relayout(plotEl, { 'xaxis.autorange': true, 'yaxis.autorange': true }));
+  }
+</script>
+
+<style>
+  .emb { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--bg-raised); padding: var(--sp-4); }
+  .emb__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); margin-bottom: var(--sp-3); }
+  .emb__models { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 999px; overflow: hidden; }
+  .emb__model { font: inherit; font-size: var(--step--1); font-weight: 540; padding: 0.35rem 0.9rem; background: var(--bg-raised); color: var(--ink-2); border: none; cursor: pointer; }
+  .emb__model.is-on { background: var(--btn-bg); color: #fff; }
+  .emb__perp { display: flex; align-items: center; gap: 0.6rem; font-size: var(--step--1); color: var(--ink-2); }
+  .emb__perp input { width: clamp(120px, 22vw, 220px); accent-color: var(--accent); }
+  .emb__perp strong { font-family: var(--font-mono); color: var(--accent-strong); }
+  .emb__reset { font-family: var(--font-mono); font-size: var(--step--2); background: none; border: 1px solid var(--rule-strong); border-radius: 999px; padding: 0.25rem 0.7rem; cursor: pointer; color: var(--ink-2); }
+  .emb__stage { position: relative; min-height: 560px; }
+  .emb__plot { width: 100%; min-height: 560px; }
+  .emb__load {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+    background: var(--bg-sunken); border: 1px dashed var(--rule-strong); border-radius: var(--radius); cursor: pointer;
+    font-family: var(--font-display); font-size: var(--step-1); color: var(--ink); width: 100%;
+  }
+  .emb__load:hover { border-color: var(--accent); }
+  .emb__load-play { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: 1.1rem; }
+  .emb__load-note { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .emb__hint { font-size: var(--step--1); color: var(--ink-3); margin-top: var(--sp-3); }
+</style>

@@ -1,0 +1,81 @@
+---
+import '@fontsource-variable/fraunces';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** current nav path, e.g. "/method" */
+  path?: string;
+  wide?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path = '/',
+  wide = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ${SITE.shortTitle}` : `${SITE.hero}`;
+const canonical = new URL(Astro.url.pathname, SITE.siteUrl).href;
+const ogImage = new URL(`${SITE.basePath}/social/og-default.png`, SITE.siteUrl).href;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  name: 'Probing the World for Groove: A Comparative Study of Transfer Learning for Drum Audio Style Classification',
+  headline: SITE.hero,
+  description: SITE.description,
+  author: SITE.authors.map((name) => ({ '@type': 'Person', name })),
+  datePublished: '2025-06-30',
+  publisher: { '@type': 'Organization', name: 'Leiden University' },
+  inLanguage: 'en',
+  url: new URL(SITE.basePath + '/', SITE.siteUrl).href,
+  keywords: ['music information retrieval', 'transfer learning', 'drum classification', 'PaSST', 'CNN', 'deep learning'],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="author" content={SITE.author} />
+    <meta name="theme-color" content="#b4622b" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={SITE.shortTitle} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Scholarly citation meta -->
+    <meta name="citation_title" content={SITE.title} />
+    <meta name="citation_author" content="Eriksen, Trent" />
+    <meta name="citation_author" content="van der Heide, Edwin" />
+    <meta name="citation_author" content="Saunders, Robert" />
+    <meta name="citation_publication_date" content="2025" />
+
+    <link rel="icon" href={`${SITE.basePath}/favicon.svg`} type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Nav path={path} />
+    <main id="main" class={wide ? 'container-wide' : ''}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

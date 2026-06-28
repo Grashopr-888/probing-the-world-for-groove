@@ -1,0 +1,44 @@
+---
+interface Item { label: string; value: number }
+interface Props {
+  title: string;
+  items: Item[];
+  model?: 'cnn' | 'passt';
+  unit?: string;
+  caption?: string;
+  source?: string;
+}
+const { title, items, model, unit = '', caption, source } = Astro.props;
+const max = Math.max(...items.map((i) => i.value));
+const color = model === 'cnn' ? 'var(--cnn)' : model === 'passt' ? 'var(--passt)' : 'var(--accent)';
+const fmt = (v: number) => (v >= 100 ? v.toFixed(0) : v.toFixed(1));
+---
+<figure class="rb">
+  <figcaption class="rb__title">{title}</figcaption>
+  <div class="rb__rows" style={`--bar:${color}`}>
+    {items.map((it) => (
+      <div class="rb__row">
+        <span class="rb__label">{it.label}</span>
+        <span class="rb__track"><span class="rb__fill" style={`width:${(it.value / max) * 100}%`}></span></span>
+        <span class="rb__val">{fmt(it.value)}{unit}</span>
+      </div>
+    ))}
+  </div>
+  {(caption || source) && (
+    <figcaption class="rb__cap">{caption}{source && <span class="rb__src"> · {source}</span>}</figcaption>
+  )}
+</figure>
+
+<style>
+  .rb { margin: 0; background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-5); }
+  .rb__title { font-family: var(--font-display); font-size: var(--step-1); font-weight: 500; line-height: var(--leading-snug); margin-bottom: var(--sp-4); text-wrap: balance; }
+  .rb__rows { display: grid; gap: 0.7rem; }
+  .rb__row { display: grid; grid-template-columns: 9.5rem 1fr 3.4rem; align-items: center; gap: var(--sp-3); }
+  .rb__label { font-size: var(--step--1); color: var(--ink-2); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rb__track { height: 1.2rem; background: var(--bg-sunken); border-radius: 999px; overflow: hidden; }
+  .rb__fill { display: block; height: 100%; background: var(--bar); border-radius: 999px; }
+  .rb__val { font-family: var(--font-mono); font-size: var(--step--1); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+  .rb__cap { font-size: var(--step--1); color: var(--ink-3); margin-top: var(--sp-4); }
+  .rb__src { font-family: var(--font-mono); font-size: var(--step--2); }
+  @media (max-width: 480px) { .rb__row { grid-template-columns: 6rem 1fr 2.6rem; } }
+</style>

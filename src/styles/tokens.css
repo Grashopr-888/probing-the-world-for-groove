@@ -1,0 +1,123 @@
+/* ============================================================
+   Design tokens for "Probing the World for Groove"
+   A warm editorial research monograph. One copper accent;
+   two fixed model colors (CNN teal, PaSST violet) used everywhere.
+   ============================================================ */
+
+:root {
+  /* --- Surfaces: warm paper --- */
+  --bg:          #faf7f2;
+  --bg-raised:   #ffffff;
+  --bg-sunken:   #f1ebe1;
+  --bg-invert:   #1c1815;
+
+  /* --- Ink --- */
+  --ink:    #1a1613;   /* primary text, warm near-black */
+  --ink-2:  #4b443b;   /* secondary */
+  --ink-3:  #756c5f;   /* muted / captions */
+  --ink-on-invert: #f4efe6;
+
+  /* --- Hairlines --- */
+  --rule:        #e6dfd2;
+  --rule-strong: #d2c7b4;
+
+  /* --- Accent: copper / cymbal --- */
+  --accent:        #b4622b;  /* decorative: rules, marks, hero */
+  --accent-strong: #8c481d;  /* text links (AA on paper) */
+  --accent-tint:   #f4e7d9;
+  --accent-glow:   #e9c8a6;
+  --btn-bg:        #a85a26;  /* copper button bg, white text passes AA, fixed across modes */
+
+  /* --- Model identity (consistent across the whole site) --- */
+  --cnn:        #0f6e66;   /* teal */
+  --cnn-strong: #0a554e;
+  --cnn-tint:   #d7ebe8;
+  --passt:        #6a4c93;  /* violet */
+  --passt-strong: #543a77;
+  --passt-tint:   #e7dff2;
+
+  /* --- Semantic --- */
+  --good: #2f7d4f;
+  --warn: #9a6212;
+  --warn-tint: #f6ebd6;
+
+  /* --- Typography --- */
+  --font-display: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
+
+  /* Fluid type scale (≈1.25 major third, 320→1280px) */
+  --step--2: clamp(0.69rem, 0.66rem + 0.16vw, 0.79rem);
+  --step--1: clamp(0.83rem, 0.78rem + 0.24vw, 0.94rem);
+  --step-0:  clamp(1.00rem, 0.93rem + 0.34vw, 1.13rem);
+  --step-1:  clamp(1.20rem, 1.10rem + 0.50vw, 1.50rem);
+  --step-2:  clamp(1.44rem, 1.29rem + 0.74vw, 2.00rem);
+  --step-3:  clamp(1.73rem, 1.51rem + 1.07vw, 2.66rem);
+  --step-4:  clamp(2.07rem, 1.76rem + 1.55vw, 3.55rem);
+  --step-5:  clamp(2.49rem, 2.04rem + 2.24vw, 4.74rem);
+
+  --leading-tight: 1.12;
+  --leading-snug: 1.3;
+  --leading-body: 1.62;
+
+  /* --- Space scale --- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4.5rem;
+  --sp-9: 7rem;
+
+  /* --- Layout --- */
+  --measure: 68ch;          /* readable prose width */
+  --container: 76rem;       /* page max */
+  --container-wide: 90rem;
+  --radius: 4px;
+  --radius-lg: 10px;
+
+  /* --- Elevation (restrained) --- */
+  --shadow-1: 0 1px 2px rgba(28, 24, 21, 0.06), 0 1px 1px rgba(28, 24, 21, 0.04);
+  --shadow-2: 0 4px 16px rgba(28, 24, 21, 0.08), 0 1px 3px rgba(28, 24, 21, 0.05);
+
+  --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent-strong);
+}
+
+/* --- Optional dark mode --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #16130f;
+    --bg-raised: #211c17;
+    --bg-sunken: #100d0a;
+    --bg-invert: #f4efe6;
+
+    --ink:   #f1ebe0;
+    --ink-2: #c8bfb0;
+    --ink-3: #968b7b;
+    --ink-on-invert: #1a1613;
+
+    --rule:        #322a22;
+    --rule-strong: #463c30;
+
+    --accent:        #d98a4f;
+    --accent-strong: #e6a874;  /* lighter for AA on dark */
+    --accent-tint:   #2c2017;
+    --accent-glow:   #5a3c22;
+
+    --cnn:        #4fb3a8;
+    --cnn-strong: #79c9c0;
+    --cnn-tint:   #14302d;
+    --passt:        #a98bd8;
+    --passt-strong: #c0a9e6;
+    --passt-tint:   #241a35;
+
+    --good: #66bd86;
+    --warn: #d9a44e;
+    --warn-tint: #2e2412;
+
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-2: 0 6px 22px rgba(0,0,0,0.5);
+  }
+}

@@ -1,0 +1,42 @@
+---
+import { withBase } from '../lib/site';
+interface Props { id: string; poster: string; title: string }
+const { id, poster, title } = Astro.props;
+---
+<div class="ve" data-id={id} data-title={title}>
+  <button class="ve__btn" type="button" aria-label={`Play video: ${title}`}>
+    <img src={withBase(poster)} alt="" loading="lazy" decoding="async" width="1280" height="720" />
+    <span class="ve__play" aria-hidden="true">
+      <svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.5 7.7a8 8 0 0 0-5.6-5.7C56 .7 34 .7 34 .7s-22 0-26.9 1.3A8 8 0 0 0 1.5 7.7 83 83 0 0 0 0 24a83 83 0 0 0 1.5 16.3 8 8 0 0 0 5.6 5.7C12 47.3 34 47.3 34 47.3s22 0 26.9-1.3a8 8 0 0 0 5.6-5.7A83 83 0 0 0 68 24a83 83 0 0 0-1.5-16.3Z" fill="#b4622b"/><path d="M27 34V14l18 10Z" fill="#fff"/></svg>
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll('.ve').forEach((el) => {
+    const btn = el.querySelector('.ve__btn');
+    btn?.addEventListener('click', () => {
+      const id = el.getAttribute('data-id');
+      const title = el.getAttribute('data-title') ?? 'Video';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.title = title;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'lazy';
+      el.replaceChildren(iframe);
+    });
+  });
+</script>
+
+<style>
+  .ve { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--rule); background: var(--bg-sunken); }
+  .ve :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
+  .ve__btn { all: unset; cursor: pointer; display: block; width: 100%; height: 100%; position: relative; }
+  .ve__btn img { width: 100%; height: 100%; object-fit: cover; }
+  .ve__btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,0.25)); opacity: 0; transition: opacity 0.2s ease; }
+  .ve__btn:hover::after, .ve__btn:focus-visible::after { opacity: 1; }
+  .ve__play { position: absolute; inset: 0; display: grid; place-items: center; }
+  .ve__play svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35)); transform: scale(1); transition: transform 0.15s ease; }
+  .ve__btn:hover .ve__play svg { transform: scale(1.08); }
+</style>

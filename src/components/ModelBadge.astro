@@ -1,0 +1,28 @@
+---
+interface Props { model: 'cnn' | 'passt'; size?: 'sm' | 'md' }
+const { model, size = 'sm' } = Astro.props;
+const label = model === 'cnn' ? 'CNN' : 'PaSST';
+---
+<span class={`badge badge--${model} badge--${size}`}>
+  <span class="badge__dot" aria-hidden="true"></span>{label}
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge--sm { font-size: var(--step--2); padding: 0.12em 0.6em; }
+  .badge--md { font-size: var(--step--1); padding: 0.25em 0.7em; }
+  .badge__dot { width: 0.5em; height: 0.5em; border-radius: 50%; }
+  .badge--cnn { background: var(--cnn-tint); color: var(--cnn-strong); }
+  .badge--cnn .badge__dot { background: var(--cnn); }
+  .badge--passt { background: var(--passt-tint); color: var(--passt-strong); }
+  .badge--passt .badge__dot { background: var(--passt); }
+</style>

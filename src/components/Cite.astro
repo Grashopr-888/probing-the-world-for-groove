@@ -1,0 +1,50 @@
+---
+interface Props { label: string; citation: string; bibtex: string }
+const { label, citation, bibtex } = Astro.props;
+---
+<div class="cite">
+  <div class="cite__head">
+    <span class="cite__label">{label}</span>
+    <button class="cite__copy" type="button" data-bibtex={bibtex}>Copy BibTeX</button>
+  </div>
+  <p class="cite__text">{citation}</p>
+  <pre class="cite__code"><code>{bibtex}</code></pre>
+</div>
+
+<script>
+  document.querySelectorAll('.cite__copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-bibtex') ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const prev = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => (btn.textContent = prev), 1600);
+      } catch {
+        btn.textContent = 'Copy failed';
+      }
+    });
+  });
+</script>
+
+<style>
+  .cite { border: 1px solid var(--rule); border-radius: var(--radius-lg); background: var(--bg-raised); overflow: hidden; }
+  .cite__head {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--rule); background: var(--bg-sunken);
+  }
+  .cite__label { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+  .cite__copy {
+    font-family: var(--font-mono); font-size: var(--step--2);
+    border: 1px solid var(--rule-strong); border-radius: 999px;
+    padding: 0.25rem 0.7rem; background: var(--bg-raised); color: var(--ink); cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .cite__copy:hover { border-color: var(--accent); }
+  .cite__text { padding: var(--sp-4); font-size: var(--step--1); color: var(--ink-2); margin: 0; }
+  .cite__code {
+    margin: 0; padding: var(--sp-4); border-top: 1px solid var(--rule);
+    overflow-x: auto; font-size: var(--step--2); line-height: 1.5; color: var(--ink-2);
+    background: var(--bg-sunken); white-space: pre;
+  }
+</style>

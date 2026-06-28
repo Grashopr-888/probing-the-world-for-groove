@@ -1,0 +1,65 @@
+---
+import { SITE, LINKS, NAV, withBase } from '../lib/site';
+---
+
+<footer class="site-foot">
+  <div class="container site-foot__inner">
+    <div class="site-foot__col">
+      <p class="site-foot__title">{SITE.title}</p>
+      <p class="muted">
+        MSc thesis &amp; ISMIR 2025 Late-Breaking Demo by {SITE.author},
+        Edwin van der Heide &amp; Robert Saunders. Leiden University.
+      </p>
+    </div>
+
+    <nav class="site-foot__col" aria-label="Footer">
+      <p class="site-foot__heading">Pages</p>
+      <ul>
+        {NAV.map((i) => <li><a href={withBase(i.href)}>{i.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="site-foot__col">
+      <p class="site-foot__heading">Artifacts</p>
+      <ul>
+        <li><a href={LINKS.ismir}>ISMIR 2025 page</a></li>
+        <li><a href={LINKS.video}>Presentation video</a></li>
+        <li><a href={LINKS.repo}>Research code</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container site-foot__base">
+    <p class="muted">© {SITE.author}, van der Heide &amp; Saunders. Paper &amp; figures: CC BY 4.0.</p>
+  </div>
+</footer>
+
+<style>
+  .site-foot {
+    margin-top: var(--sp-8);
+    border-top: 1px solid var(--rule);
+    background: var(--bg-sunken);
+  }
+  .site-foot__inner {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: var(--sp-6);
+    padding-block: var(--sp-7) var(--sp-5);
+  }
+  @media (max-width: 640px) {
+    .site-foot__inner { grid-template-columns: 1fr; gap: var(--sp-5); }
+  }
+  .site-foot__title { font-family: var(--font-display); font-size: var(--step-1); }
+  .site-foot__heading {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: var(--sp-3);
+  }
+  .site-foot__col ul { list-style: none; padding: 0; display: grid; gap: 0.4rem; }
+  .site-foot__col a { color: var(--ink-2); text-decoration: none; font-size: var(--step--1); }
+  .site-foot__col a:hover { color: var(--accent-strong); }
+  .site-foot__base { padding-block: var(--sp-4); border-top: 1px solid var(--rule); }
+  .site-foot__base p { font-size: var(--step--2); }
+</style>

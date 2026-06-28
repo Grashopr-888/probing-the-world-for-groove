@@ -1,0 +1,30 @@
+---
+import examples from '../data/audio-examples.json';
+import { withBase } from '../lib/site';
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const label = (e: typeof examples[number]) =>
+  cap(e.primary) + (e.secondary ? ' · ' + e.secondary.replace(/-/g, ' ') : '');
+---
+<div class="ax-grid">
+  {examples.map((e) => (
+    <figure class="ax">
+      <figcaption class="ax__head">
+        <span class="ax__style">{label(e)}</span>
+        <span class="ax__meta">{e.bpm} BPM · {e.durationSec}s</span>
+      </figcaption>
+      <audio controls preload="none" src={withBase(e.file)}>
+        Your browser does not support the audio element.
+      </audio>
+    </figure>
+  ))}
+</div>
+
+<style>
+  .ax-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-4); margin-top: var(--sp-5); }
+  @media (max-width: 640px) { .ax-grid { grid-template-columns: 1fr; } }
+  .ax { margin: 0; background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-4); border-top: 3px solid var(--accent); }
+  .ax__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-3); flex-wrap: wrap; }
+  .ax__style { font-family: var(--font-display); font-size: var(--step-1); font-weight: 500; }
+  .ax__meta { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .ax audio { width: 100%; height: 38px; }
+</style>

@@ -1,0 +1,53 @@
+---
+import { withBase } from '../lib/site';
+interface Props {
+  src?: string;
+  alt: string;
+  caption?: string;
+  source?: string;
+  /** shown in the placeholder box when no src yet */
+  placeholder?: string;
+  ratio?: string;
+  width?: number;
+  height?: number;
+}
+const { src, alt, caption, source, placeholder, ratio = '16 / 9', width, height } = Astro.props;
+---
+<figure class="fig">
+  {src ? (
+    <img src={withBase(src)} alt={alt} loading="lazy" decoding="async" width={width} height={height} />
+  ) : (
+    <div class="fig__ph" style={`aspect-ratio:${ratio}`} role="img" aria-label={alt}>
+      <span class="fig__ph-label">{placeholder ?? 'Figure to be extracted from notebook outputs'}</span>
+    </div>
+  )}
+  {(caption || source) && (
+    <figcaption>
+      {caption}{source && <span class="fig__src"> · {source}</span>}
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .fig { margin: 0; }
+  .fig img { border-radius: var(--radius-lg); border: 1px solid var(--rule); background: var(--bg-raised); }
+  .fig__ph {
+    display: grid;
+    place-items: center;
+    background:
+      repeating-linear-gradient(45deg, var(--bg-sunken) 0 10px, transparent 10px 20px),
+      var(--bg-raised);
+    border: 1px dashed var(--rule-strong);
+    border-radius: var(--radius-lg);
+    padding: var(--sp-5);
+  }
+  .fig__ph-label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    text-align: center;
+    max-width: 32ch;
+  }
+  figcaption { font-size: var(--step--1); color: var(--ink-3); margin-top: var(--sp-3); }
+  .fig__src { font-family: var(--font-mono); font-size: var(--step--2); }
+</style>
