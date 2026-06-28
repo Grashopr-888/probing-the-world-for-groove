@@ -250,6 +250,25 @@ const dataAttrs = (e: typeof experiments[number]) => ({
     const same = a === b;
     return `<div class="dr ${same ? '' : 'dr--diff'}"><dt>${label}</dt><dd>${a}</dd><dd>${b}</dd></div>`;
   }
+  function f1Chart(a: Exp, b: Exp) {
+    const W = 680, padL = 128, padR = 78, top = 12, rowH = 48, bottom = 30;
+    const H = top + 2 * rowH + bottom, plotW = W - padL - padR;
+    const x = (v: number) => padL + v * plotW;
+    const col = (m: string) => (m === 'cnn' ? 'var(--cnn)' : 'var(--passt)');
+    const grid = [0, 0.25, 0.5, 0.75, 1].map((t) =>
+      `<line x1="${x(t)}" y1="${top}" x2="${x(t)}" y2="${H - bottom}" stroke="var(--rule)" ${t ? 'stroke-dasharray="2 3"' : ''}/>` +
+      `<text x="${x(t)}" y="${H - bottom + 16}" text-anchor="middle" fill="var(--ink-3)" font-size="10" font-family="var(--font-mono)">${t}</text>`).join('');
+    const row = (e: Exp, tag: string, i: number) => {
+      const cy = top + i * rowH + rowH / 2, c = col(e.model);
+      return `<text x="${padL - 12}" y="${cy - 3}" text-anchor="end" dominant-baseline="middle" fill="var(--ink)" font-size="13" font-weight="700">${tag}</text>` +
+        `<text x="${padL - 12}" y="${cy + 12}" text-anchor="end" fill="var(--ink-3)" font-size="10" font-family="var(--font-mono)">exp ${e.experimentId} · ${e.model.toUpperCase()}</text>` +
+        `<line x1="${x(0)}" y1="${cy}" x2="${x(e.f1)}" y2="${cy}" stroke="${c}" stroke-width="2.5" opacity="0.35"/>` +
+        `<circle cx="${x(e.f1)}" cy="${cy}" r="7" fill="${c}"/>` +
+        `<text x="${x(e.f1) + 13}" y="${cy}" dominant-baseline="middle" fill="var(--ink)" font-size="13" font-weight="600" font-family="var(--font-mono)">${e.f1.toFixed(4)}</text>`;
+    };
+    return `<figure class="cmp-chart"><figcaption>macro-F1 · full 0 to 1 scale</figcaption>` +
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="macro-F1 of run A ${a.f1.toFixed(4)} versus run B ${b.f1.toFixed(4)}">${grid}${row(a, 'A', 0)}${row(b, 'B', 1)}</svg></figure>`;
+  }
   function compare() {
     const a = data[+selA.value], b = data[+selB.value];
     if (!a || !b) return;
@@ -260,6 +279,7 @@ const dataAttrs = (e: typeof experiments[number]) => ({
       : `<p class="cmp-ok">✓ Same dataset scope (${a.datasetScopeLabel}); directly comparable.</p>`;
     out.innerHTML = `
       ${warn}
+      ${f1Chart(a, b)}
       <dl class="diff">
         <div class="dr dr--head"><dt></dt><dd>A · exp ${a.experimentId}</dd><dd>B · exp ${b.experimentId}</dd></div>
         ${diffRow('Model', a.model.toUpperCase(), b.model.toUpperCase())}
@@ -327,16 +347,21 @@ const dataAttrs = (e: typeof experiments[number]) => ({
   .cmp-controls label { display: grid; gap: 0.3rem; font-family: var(--font-mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
   .cmp-controls select { font: inherit; font-size: var(--step--1); padding: 0.5rem; border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--bg-raised); color: var(--ink); max-width: min(90vw, 30rem); text-transform: none; letter-spacing: normal; }
   .cmp-out { margin-top: var(--sp-5); }
-  .cmp-warn { background: var(--warn-tint); color: var(--warn); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius); border-left: 3px solid var(--warn); font-size: var(--step--1); }
-  .cmp-ok { color: var(--good); font-size: var(--step--1); }
-  .diff { margin-top: var(--sp-4); border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; }
-  .dr { display: grid; grid-template-columns: 9rem 1fr 1fr; gap: var(--sp-3); padding: 0.6rem var(--sp-4); border-bottom: 1px solid var(--rule); font-size: var(--step--1); }
-  .dr:last-child { border-bottom: none; }
-  .dr dt { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
-  .dr--head { background: var(--bg-sunken); font-weight: 600; }
-  .dr--head dd { font-family: var(--font-mono); font-size: var(--step--2); }
-  .dr--diff { background: color-mix(in srgb, var(--accent-tint) 50%, transparent); }
-  .dr--f1 { font-weight: 600; background: var(--bg-sunken); }
-  .delta.up { color: var(--good); } .delta.down { color: var(--warn); }
-  @media (max-width: 560px) { .dr { grid-template-columns: 1fr; gap: 0.1rem; } }
+  /* Comparison output is injected via innerHTML, so these must be :global (Astro scopes component styles). */
+  :global(.cmp-chart) { margin: var(--sp-4) 0; background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-4) var(--sp-5); }
+  :global(.cmp-chart figcaption) { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--sp-2); }
+  :global(.cmp-chart svg) { width: 100%; height: auto; overflow: visible; }
+  :global(.cmp-warn) { background: var(--warn-tint); color: var(--warn); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius); border-left: 3px solid var(--warn); font-size: var(--step--1); }
+  :global(.cmp-ok) { color: var(--good); font-size: var(--step--1); }
+  :global(.diff) { margin-top: var(--sp-4); border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; }
+  :global(.dr) { display: grid; grid-template-columns: 9rem 1fr 1fr; gap: var(--sp-3); padding: 0.6rem var(--sp-4); border-bottom: 1px solid var(--rule); font-size: var(--step--1); align-items: start; }
+  :global(.dr:last-child) { border-bottom: none; }
+  :global(.dr dt) { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); margin: 0; }
+  :global(.dr dd) { margin: 0; }
+  :global(.dr--head) { background: var(--bg-sunken); font-weight: 600; }
+  :global(.dr--head dd) { font-family: var(--font-mono); font-size: var(--step--2); }
+  :global(.dr--diff) { background: color-mix(in srgb, var(--accent-tint) 50%, transparent); }
+  :global(.dr--f1) { font-weight: 600; background: var(--bg-sunken); }
+  :global(.delta.up) { color: var(--good); } :global(.delta.down) { color: var(--warn); }
+  @media (max-width: 560px) { :global(.dr) { grid-template-columns: 1fr; gap: 0.1rem; } }
 </style>
