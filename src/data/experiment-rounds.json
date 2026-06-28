@@ -1,0 +1,174 @@
+[
+  {
+    "round": 1,
+    "title": "Initial configuration",
+    "category": "Configuration",
+    "question": "Do a baseline CNN and PaSST work on a narrow rock-style subset?",
+    "experimentIds": [
+      "1.1",
+      "1.2"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.9204
+  },
+  {
+    "round": 2,
+    "title": "PaSST configuration",
+    "category": "Configuration",
+    "question": "How should PaSST be configured before scaling up?",
+    "experimentIds": [
+      "2.1",
+      "2.2"
+    ],
+    "models": [
+      "passt"
+    ],
+    "bestF1": 0.8699
+  },
+  {
+    "round": 3,
+    "title": "Low-data comparison",
+    "category": "Dataset",
+    "question": "Which model wins when training data is scarce (GMD-mini)?",
+    "experimentIds": [
+      "3.1",
+      "3.2"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.3911
+  },
+  {
+    "round": 4,
+    "title": "Full-dataset comparison",
+    "category": "Dataset",
+    "question": "How do the models compare on the full 74-class task?",
+    "experimentIds": [
+      "4.1",
+      "4.2"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.7531
+  },
+  {
+    "round": 5,
+    "title": "Repeatability",
+    "category": "Dataset",
+    "question": "Are the full-data results stable across repeated runs?",
+    "experimentIds": [
+      "5.1",
+      "5.2",
+      "5.3",
+      "5.4"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.7827
+  },
+  {
+    "round": 6,
+    "title": "t-SNE & time patchout",
+    "category": "Model depth & patchout",
+    "question": "Does time patchout help, and how are embeddings structured?",
+    "experimentIds": [
+      "6.1",
+      "6.2"
+    ],
+    "models": [
+      "passt"
+    ],
+    "bestF1": 0.7247
+  },
+  {
+    "round": 7,
+    "title": "PaSST head depth I",
+    "category": "Model depth & patchout",
+    "question": "Does a deeper MLP head help PaSST?",
+    "experimentIds": [
+      "7.1"
+    ],
+    "models": [
+      "passt"
+    ],
+    "bestF1": 0.8582
+  },
+  {
+    "round": 8,
+    "title": "PaSST head depth & bottlenecks",
+    "category": "Model depth & patchout",
+    "question": "What head depth and bottleneck shape is best for PaSST?",
+    "experimentIds": [
+      "8.1",
+      "8.2",
+      "8.3",
+      "8.4",
+      "8.5",
+      "8.6",
+      "8.7"
+    ],
+    "models": [
+      "passt"
+    ],
+    "bestF1": 0.8659
+  },
+  {
+    "round": 9,
+    "title": "CNN convolutional depth",
+    "category": "Model depth & patchout",
+    "question": "How many convolutional layers does the CNN need?",
+    "experimentIds": [
+      "9.1",
+      "9.2",
+      "9.3"
+    ],
+    "models": [
+      "cnn"
+    ],
+    "bestF1": 0.8944
+  },
+  {
+    "round": 10,
+    "title": "Augmentation",
+    "category": "Augmentation & padding",
+    "question": "Do audio augmentations improve either model?",
+    "experimentIds": [
+      "10.1",
+      "10.2",
+      "10.3",
+      "10.4"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.908
+  },
+  {
+    "round": 11,
+    "title": "Padding",
+    "category": "Augmentation & padding",
+    "question": "Does the padding mode affect performance and representation?",
+    "experimentIds": [
+      "11.1",
+      "11.2",
+      "11.3",
+      "11.4",
+      "11.5"
+    ],
+    "models": [
+      "cnn",
+      "passt"
+    ],
+    "bestF1": 0.8752
+  }
+]

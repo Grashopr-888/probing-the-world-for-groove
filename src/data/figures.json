@@ -1,0 +1,42 @@
+{
+  "_note": "Figure provenance. Images extracted (no re-execution) from saved notebook outputs via scripts/extract_notebook_outputs.py. sourceCommit = research repo Grashopr-888/A-comparative-study-… after notebook restoration.",
+  "sourceCommit": "cbaead8",
+  "figures": {
+    "tsne-passt": {
+      "publicPath": "/figures/tsne-passt.webp", "width": 1372, "height": 989,
+      "sourceNotebook": "PaSST_setup6_4.ipynb", "cellIndex": 43,
+      "alt": "t-SNE projection of frozen PaSST embeddings on the GMD test set, points coloured by style class, forming broad clusters.",
+      "caption": "t-SNE of frozen PaSST embeddings (GMD test set), coloured by style."
+    },
+    "tsne-cnn": {
+      "publicPath": "/figures/tsne-cnn.webp", "width": 1588, "height": 1474,
+      "sourceNotebook": "GMD_CNN_prototype5_3_tSNE.ipynb", "cellIndex": 64,
+      "alt": "t-SNE projection of CNN embeddings, points coloured by style class, forming smaller local clusters.",
+      "caption": "t-SNE of the drum-specific CNN embeddings, coloured by style."
+    },
+    "cnn-training-curves": {
+      "publicPath": "/figures/cnn-training-curves.webp", "width": 1389, "height": 590,
+      "sourceNotebook": "GMD_CNN_prototype6_4.ipynb", "cellIndex": 42,
+      "alt": "Training and validation loss falling and converging over 50 epochs, with validation accuracy rising to about 0.90.",
+      "caption": "Final CNN (exp 10.1): training/validation loss and validation accuracy over 50 epochs."
+    },
+    "cnn-confusion": {
+      "publicPath": "/figures/cnn-confusion.webp", "width": 1833, "height": 1589,
+      "sourceNotebook": "GMD_CNN_prototype6_4.ipynb", "cellIndex": 53,
+      "alt": "74×74 confusion matrix for the final CNN, dominated by a strong diagonal with sparse off-diagonal confusions.",
+      "caption": "Final CNN confusion matrix across all 74 classes — a strong diagonal with sparse, structured confusions."
+    },
+    "passt-training-curves": {
+      "publicPath": "/figures/passt-training-curves.webp", "width": 1189, "height": 590,
+      "sourceNotebook": "PaSST_setup6_16.ipynb", "cellIndex": 26,
+      "alt": "Training and validation loss converging over epochs for the final PaSST model.",
+      "caption": "Final PaSST (exp 11.2): training and validation loss over training."
+    },
+    "passt-confusion": {
+      "publicPath": "/figures/passt-confusion.webp", "width": 1833, "height": 1589,
+      "sourceNotebook": "PaSST_setup6_16.ipynb", "cellIndex": 37,
+      "alt": "74×74 confusion matrix for the final PaSST model, with a strong diagonal and confusions among related styles.",
+      "caption": "Final PaSST confusion matrix across all 74 classes."
+    }
+  }
+}

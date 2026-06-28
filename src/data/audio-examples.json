@@ -1,0 +1,74 @@
+[
+  {
+    "file": "/audio/drummer1_session1_51_003.wav",
+    "styleClass": "rock_shuffle",
+    "primary": "rock",
+    "secondary": "shuffle",
+    "bpm": 125,
+    "durationSec": 3.8,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer8_session1_2_001.wav",
+    "styleClass": "funk",
+    "primary": "funk",
+    "secondary": "",
+    "bpm": 95,
+    "durationSec": 5.1,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer1_session1_78_294.wav",
+    "styleClass": "jazz_fast",
+    "primary": "jazz",
+    "secondary": "fast",
+    "bpm": 290,
+    "durationSec": 1.7,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer8_session1_23_022.wav",
+    "styleClass": "hiphop",
+    "primary": "hiphop",
+    "secondary": "",
+    "bpm": 70,
+    "durationSec": 6.9,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer5_session1_2_128.wav",
+    "styleClass": "latin_brazilian-bossa",
+    "primary": "latin",
+    "secondary": "brazilian-bossa",
+    "bpm": 127,
+    "durationSec": 3.8,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer8_session1_26_055.wav",
+    "styleClass": "afrobeat",
+    "primary": "afrobeat",
+    "secondary": "",
+    "bpm": 94,
+    "durationSec": 5.1,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer7_session3_159_006.wav",
+    "styleClass": "soul",
+    "primary": "soul",
+    "secondary": "",
+    "bpm": 98,
+    "durationSec": 4.9,
+    "sampleRate": 16000
+  },
+  {
+    "file": "/audio/drummer5_session2_5_008.wav",
+    "styleClass": "reggae",
+    "primary": "reggae",
+    "secondary": "",
+    "bpm": 126,
+    "durationSec": 3.8,
+    "sampleRate": 16000
+  }
+]

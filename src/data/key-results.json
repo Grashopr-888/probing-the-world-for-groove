@@ -1,0 +1,14 @@
+{
+  "finalCnn": 0.908,
+  "finalPasst": 0.8752,
+  "lowdataCnn": 0.3267,
+  "lowdataPasst": 0.3911,
+  "bestCnnDepth": 0.8944,
+  "bestPasstHead": 0.8659,
+  "rockOnlyCnn": 0.9204,
+  "counts": {
+    "experiments": 34,
+    "rounds": 11,
+    "categories": 4
+  }
+}

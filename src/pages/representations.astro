@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ModelBadge from '../components/ModelBadge.astro';
+import RankedBars from '../components/RankedBars.astro';
+import Figure from '../components/Figure.astro';
+import Callout from '../components/Callout.astro';
+import EmbeddingExplorer from '../components/EmbeddingExplorer.astro';
+import emb from '../data/embedding-comparisons.json';
+import { withBase } from '../lib/site';
+---
+
+<Base path="/representations" title="Representations" description="What the CNN and PaSST embeddings reveal: t-SNE structure, within-model centroid-shift stability, and why cross-model distances aren't comparable.">
+  <PageHeader
+    eyebrow="Representations"
+    title="What the learned embeddings reveal"
+    lede="Two models can score similarly yet organize drum style very differently. Beyond macro-F1, the embeddings expose how each model structures style, and how stable that structure is."
+  />
+
+  <!-- WHY -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Why look past accuracy</p>
+      <div class="prose measure">
+        <p>
+          Macro-F1 says <em>how often</em> a model is right, not <em>how</em> it understands the task.
+          To compare understanding, the high-dimensional embeddings of each model are projected to two
+          dimensions with t-SNE and summarized by class <strong>centroids</strong>, the average
+          position of each style. Tracking how far those centroids move between training runs measures
+          the <strong>stability</strong> of a model's representation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- t-SNE -->
+  <section class="band-sunken">
+    <div class="container">
+      <p class="eyebrow">Embedding structure · interactive</p>
+      <h2>Explore the embedding space</h2>
+      <p class="lede measure">
+        Switch between models, then move the slider to re-project the same embeddings at different
+        t-SNE perplexities. Low perplexity emphasises local neighbourhoods; high perplexity favours
+        global structure. PaSST keeps coherent clusters by primary style across the whole sweep,
+        while the CNN organises into smaller, more local groups.
+      </p>
+      <EmbeddingExplorer />
+      <noscript>
+        <div class="grid-2" style="margin-top: var(--sp-4)">
+          <Figure src="/figures/tsne-passt.webp" width={1372} height={989}
+            alt="t-SNE of frozen PaSST embeddings, coloured by style." caption="PaSST embeddings (static snapshot)." source="PaSST_setup6_4.ipynb" />
+          <Figure src="/figures/tsne-cnn.webp" width={1588} height={1474}
+            alt="t-SNE of CNN embeddings, coloured by style." caption="CNN embeddings (static snapshot)." source="GMD_CNN_prototype5_3_tSNE.ipynb" />
+        </div>
+      </noscript>
+    </div>
+  </section>
+
+  <!-- CONFUSIONS -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Where the models confuse styles</p>
+      <h2>Confusion concentrates on neighbouring styles</h2>
+      <p class="lede measure">
+        Both models keep a strong diagonal but stumble on stylistically adjacent classes, like jazz-fast
+        with dance-breakbeat and jazz-mediumfast, and funk with hip-hop. The CNN also over-predicts
+        the dominant <em>rock</em> classes, a symptom of class imbalance.
+      </p>
+      <div class="grid-2">
+        <Figure src="/figures/cnn-confusion.webp" width={1833} height={1589}
+          alt="74 by 74 confusion matrix for the final CNN, dominated by a strong diagonal with sparse off-diagonal confusions."
+          caption="Final CNN (exp 10.1): confusion across all 74 classes." source="GMD_CNN_prototype6_4.ipynb" />
+        <Figure src="/figures/passt-confusion.webp" width={1833} height={1589}
+          alt="74 by 74 confusion matrix for the final PaSST model, with a strong diagonal and confusions among related styles."
+          caption="Final PaSST (exp 11.2): confusion across all 74 classes." source="PaSST_setup6_16.ipynb" />
+      </div>
+    </div>
+  </section>
+
+  <!-- CAVEAT -->
+  <section>
+    <div class="container">
+      <Callout variant="warn" title="The most important caveat on this page">
+        <p>
+          The <ModelBadge model="cnn" /> and <ModelBadge model="passt" /> embeddings live in
+          <strong>different coordinate systems with different distance scales</strong>. In absolute
+          terms the CNN's centroids move about <strong>{emb.scaleRatio}×</strong> further than
+          PaSST's (mean primary-style shift {emb.cnn.meanPrimaryShift} vs {emb.passt.meanPrimaryShift}),
+          but that ratio is an artifact of scale, <em>not</em> evidence that PaSST is “11× more
+          stable.” The two charts below therefore use <strong>separate axes</strong> and are read
+          only <em>within</em> each model.
+        </p>
+      </Callout>
+    </div>
+  </section>
+
+  <!-- WITHIN-MODEL SHIFTS -->
+  <section class="band-sunken">
+    <div class="container">
+      <p class="eyebrow">Stability under padding &amp; augmentation</p>
+      <h2>How far the centroids move, by intervention</h2>
+      <p class="lede measure">
+        Each bar is the mean distance a model's primary-style centroids travelled from its baseline
+        run under a given change. The scales are completely different: the CNN's space lurches under
+        every intervention, reflection padding most of all, while PaSST barely moves. Read each
+        model on its own axis.
+      </p>
+      <div class="grid-2">
+        <RankedBars
+          title="CNN: centroid shift by intervention"
+          model="cnn"
+          items={emb.cnn.interventionShifts.map((d) => ({ label: d.label, value: d.shift }))}
+          caption={`Mean primary-style shift from the ${emb.cnn.interventionBaseline} baseline. Reflection padding moves it most.`}
+          source="workbook · GMD_CNN_primary_embedding"
+        />
+        <RankedBars
+          title="PaSST: centroid shift by intervention"
+          model="passt"
+          items={emb.passt.interventionShifts.map((d) => ({ label: d.label, value: d.shift }))}
+          caption={`Mean primary-style shift from the ${emb.passt.interventionBaseline} baseline. Note the axis: about ${emb.scaleRatio}× smaller than the CNN.`}
+          source="workbook · PaSST_primary_embedding"
+        />
+      </div>
+
+      <h3 class="sub-h">And which styles move the most</h3>
+      <div class="grid-2">
+        <RankedBars
+          title="CNN: most-shifted primary styles"
+          model="cnn"
+          items={emb.cnn.topPrimary.map((p) => ({ label: p.style, value: p.shift }))}
+          caption={`Under reflection padding, mean shift ${emb.cnn.meanPrimaryShift}`}
+          source="workbook · GMD_CNN_primary_embedding"
+        />
+        <RankedBars
+          title="PaSST: most-shifted primary styles"
+          model="passt"
+          items={emb.passt.topPrimary.map((p) => ({ label: p.style, value: p.shift }))}
+          caption={`Mean shift ${emb.passt.meanPrimaryShift}`}
+          source="workbook · PaSST_primary_embedding"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERPRETATION -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">What it suggests</p>
+      <h2>A more hierarchical space, at a cost in accuracy</h2>
+      <div class="prose measure">
+        <p>
+          Taken together, PaSST's small, evenly distributed shifts and tight primary-style clustering
+          suggest its AudioSet pretraining carries a stable, hierarchical “world model” of audio that
+          transfers to drum style. The CNN's large, uneven shifts, concentrated in a handful of
+          styles, point to a more local, task-fitted representation that is more sensitive to class
+          imbalance and to interventions like padding.
+        </p>
+        <p>
+          This is the heart of the thesis's nuance: the CNN wins on aggregate macro-F1, yet PaSST
+          organizes style more robustly. Accuracy and representational quality are not the same axis.
+        </p>
+      </div>
+      <Callout variant="note" title="Read t-SNE with care">
+        <p>
+          t-SNE is an exploratory projection: distances and cluster sizes in 2-D are not literal.
+          These views motivate hypotheses about structure, not proof of semantic
+          separation. Centroid shifts are reported within a model, as ranks and relative magnitudes.
+        </p>
+      </Callout>
+      <p style="margin-top: var(--sp-5)"><a href={withBase('/experiments')}>← Back to the experiments</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .band-sunken { background: var(--bg-sunken); }
+  section h2 { margin-bottom: var(--sp-4); max-width: 26ch; }
+  .sub-h { margin: var(--sp-7) 0 var(--sp-2); font-size: var(--step-1); }
+  .measure { max-width: var(--measure); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); margin-top: var(--sp-5); align-items: start; }
+  @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>

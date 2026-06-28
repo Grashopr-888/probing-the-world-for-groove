@@ -1,0 +1,29 @@
+{
+  "sourceClip": "drummer8_session1_2_001.wav",
+  "style": "funk",
+  "bpm": 95,
+  "note": "Illustrative augmentations applied to one GMD clip for visualisation. The study used the audiomentations library; the time-stretch here is resampling-based.",
+  "variants": [
+    {
+      "key": "original",
+      "label": "Original",
+      "file": "/audio/aug-original.wav"
+    },
+    {
+      "key": "noise",
+      "label": "+ Gaussian noise",
+      "file": "/audio/aug-noise.wav"
+    },
+    {
+      "key": "room",
+      "label": "+ Room simulation",
+      "file": "/audio/aug-room.wav"
+    },
+    {
+      "key": "stretch",
+      "label": "+ Time stretch",
+      "file": "/audio/aug-stretch.wav"
+    }
+  ],
+  "spectrogram": "/figures/augmentation-spectrograms.webp"
+}

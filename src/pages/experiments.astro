@@ -1,0 +1,342 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ModelBadge from '../components/ModelBadge.astro';
+import experiments from '../data/experiments.json';
+import rounds from '../data/experiment-rounds.json';
+import { LINKS } from '../lib/site';
+
+const repoBlob = (nb: string) => `${LINKS.archiveRepo}/blob/main/notebooks/${nb}`;
+const augLabel: Record<string, string> = {
+  'gaussian-noise': 'Gaussian noise', 'room-simulation': 'Room sim', 'time-stretch': 'Time stretch', none: 'None',
+};
+const fmt = (v: number) => v.toFixed(4);
+
+// strip-plot geometry
+const W = 760, padL = 96, padR = 48, top = 22, rowH = 32, bottom = 38;
+const H = top + 11 * rowH + bottom;
+const xf = (f1: number) => padL + f1 * (W - padL - padR);
+const byRound: Record<number, typeof experiments> = {} as any;
+experiments.forEach((e) => { (byRound[e.round] ||= [] as any).push(e); });
+const dots = experiments.flatMap((e) => {
+  const arr = byRound[e.round];
+  const i = arr.indexOf(e), n = arr.length;
+  const off = n > 1 ? (i / (n - 1) - 0.5) * (rowH * 0.55) : 0;
+  return [{ e, cx: xf(e.f1), cy: top + (e.round - 1) * rowH + rowH / 2 + off }];
+});
+const ticks = [0, 0.25, 0.5, 0.75, 1];
+
+const FILTERS = [
+  { key: 'model', label: 'Model', opts: [['cnn', 'CNN'], ['passt', 'PaSST']] },
+  { key: 'category', label: 'Category', opts: [['Configuration', 'Configuration'], ['Dataset', 'Dataset'], ['Model depth & patchout', 'Depth & patchout'], ['Augmentation & padding', 'Aug & padding']] },
+  { key: 'scope', label: 'Dataset scope', opts: [['gmd-full', 'GMD-full'], ['gmd-mini', 'GMD-mini'], ['rock-only', 'Rock-only']] },
+  { key: 'padding', label: 'Padding', opts: [['zero', 'Zero'], ['reflection', 'Reflection'], ['circular', 'Circular']] },
+  { key: 'aug', label: 'Augmentation', opts: [['none', 'None'], ['gaussian-noise', 'Gaussian'], ['room-simulation', 'Room sim'], ['time-stretch', 'Time stretch']] },
+];
+const dataAttrs = (e: typeof experiments[number]) => ({
+  'data-exp': e.experimentId,
+  'data-model': e.model,
+  'data-category': e.category,
+  'data-scope': e.datasetScope,
+  'data-padding': e.padding,
+  'data-aug': e.augmentation.length ? e.augmentation.join(',') : 'none',
+  'data-f1': String(e.f1),
+  'data-round': String(e.round),
+});
+---
+
+<Base path="/experiments" title="Experiments" description="An interactive explorer of all 34 experiments across 11 rounds: filter, sort, compare, and jump to the source notebooks.">
+  <PageHeader
+    eyebrow="Experiments"
+    title="34 experiments, 11 rounds, 4 questions"
+    lede="The work progressed from narrow proof-of-concept to the full 74-class benchmark. Read the curated progression below, then explore, filter, and compare every run."
+  />
+
+  <!-- CURATED PROGRESSION -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">The progression</p>
+      <h2>How the study unfolded</h2>
+      <ol class="timeline">
+        {rounds.map((r) => (
+          <li class="tl">
+            <div class="tl__rail"><span class="tl__num">{r.round}</span></div>
+            <div class="tl__body">
+              <div class="tl__head">
+                <h3>{r.title}</h3>
+                <span class="tl__cat">{r.category}</span>
+              </div>
+              <p class="tl__q">{r.question}</p>
+              <div class="tl__chips">
+                {experiments.filter((e) => e.round === r.round).map((e) => (
+                  <a class="chip" href={repoBlob(e.notebook)} rel="noopener" title={e.description}>
+                    <ModelBadge model={e.model as 'cnn' | 'passt'} />
+                    <span class="chip__id">{e.experimentId}</span>
+                    <span class={`chip__f1 ${e.isHeadline ? 'is-headline' : ''}`}>{fmt(e.f1)}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- EXPLORER -->
+  <section class="band-sunken">
+    <div class="container">
+      <p class="eyebrow">Explore</p>
+      <h2>Every run, filterable</h2>
+
+      <div class="filters" id="filters">
+        {FILTERS.map((g) => (
+          <fieldset class="fgroup">
+            <legend>{g.label}</legend>
+            <div class="fopts">
+              {g.opts.map(([val, lab]) => (
+                <button type="button" class="fchip" data-filter={g.key} data-value={val} aria-pressed="false">{lab}</button>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+        <button type="button" id="filters-reset" class="freset">Reset</button>
+      </div>
+
+      <p class="count" id="count" aria-live="polite"></p>
+
+      <!-- strip plot -->
+      <figure class="strip">
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Macro-F1 of every experiment, grouped by round and coloured by model.">
+          {ticks.map((t) => (
+            <g>
+              <line x1={xf(t)} y1={top - 6} x2={xf(t)} y2={H - bottom} stroke="var(--rule)" stroke-dasharray={t === 0 ? '0' : '2 3'} />
+              <text x={xf(t)} y={H - bottom + 16} text-anchor="middle" fill="var(--ink-3)" font-size="11" font-family="var(--font-mono)">{t}</text>
+            </g>
+          ))}
+          {Array.from({ length: 11 }, (_, i) => i + 1).map((r) => (
+            <text x={padL - 12} y={top + (r - 1) * rowH + rowH / 2} text-anchor="end" dominant-baseline="middle" fill="var(--ink-3)" font-size="11" font-family="var(--font-mono)">R{r}</text>
+          ))}
+          {dots.map((d) => (
+            <circle class="dot" {...dataAttrs(d.e)} cx={d.cx} cy={d.cy} r={d.e.isHeadline ? 6 : 4.5}
+              fill={d.e.model === 'cnn' ? 'var(--cnn)' : 'var(--passt)'}
+              stroke={d.e.isHeadline ? 'var(--accent)' : 'none'} stroke-width="2">
+              <title>{`exp ${d.e.experimentId} · ${d.e.model.toUpperCase()} · F1 ${fmt(d.e.f1)}: ${d.e.description}`}</title>
+            </circle>
+          ))}
+        </svg>
+        <figcaption>Macro-F1 by round; <span class="k-cnn">●</span> CNN, <span class="k-passt">●</span> PaSST; ringed dots are the headline results. Source: workbook · Overall.</figcaption>
+      </figure>
+
+      <!-- table -->
+      <div class="table-wrap">
+        <table id="exp-table">
+          <thead>
+            <tr>
+              <th><button class="sort" data-sort="round">Round</button></th>
+              <th><button class="sort" data-sort="exp">Exp</button></th>
+              <th>Model</th>
+              <th>Dataset</th>
+              <th>Configuration</th>
+              <th class="num"><button class="sort" data-sort="f1">macro-F1 ▾</button></th>
+              <th>Notebook</th>
+            </tr>
+          </thead>
+          <tbody>
+            {experiments.map((e) => (
+              <tr {...dataAttrs(e)} class={e.isHeadline ? 'is-headline' : ''}>
+                <td class="mono">{e.round}</td>
+                <td class="mono">{e.experimentId}</td>
+                <td><ModelBadge model={e.model as 'cnn' | 'passt'} /></td>
+                <td>{e.datasetScopeLabel}</td>
+                <td>{e.description}</td>
+                <td class="num mono">{fmt(e.f1)}</td>
+                <td><a href={repoBlob(e.notebook)} rel="noopener" class="nb">{e.notebook.replace('.ipynb', '')}</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Compare</p>
+      <h2>What changed between two runs?</h2>
+      <div class="cmp-controls">
+        <label>A <select id="cmp-a"></select></label>
+        <label>B <select id="cmp-b"></select></label>
+      </div>
+      <div id="cmp-out" class="cmp-out"></div>
+    </div>
+  </section>
+
+  <script type="application/json" id="exp-json" set:html={JSON.stringify(experiments)}></script>
+</Base>
+
+<script>
+  type Exp = {
+    experimentId: string; round: number; model: 'cnn' | 'passt'; f1: number;
+    description: string; datasetScopeLabel: string; datasetScope: string;
+    padding: string; augmentation: string[]; comparableWithFinal: boolean; notebook: string;
+  };
+  const data: Exp[] = JSON.parse(document.getElementById('exp-json')!.textContent || '[]');
+  const GROUPS = ['model', 'category', 'scope', 'padding', 'aug'];
+
+  // ---------- filtering ----------
+  const activeFor = (g: string) =>
+    [...document.querySelectorAll(`[data-filter="${g}"][aria-pressed="true"]`)].map((b) => (b as HTMLElement).dataset.value!);
+  const matches = (el: Element) =>
+    GROUPS.every((g) => {
+      const act = activeFor(g);
+      if (!act.length) return true;
+      const val = (el.getAttribute('data-' + g) || '').split(',');
+      return act.some((a) => val.includes(a));
+    });
+
+  const rows = [...document.querySelectorAll('#exp-table tbody tr')];
+  const dots = [...document.querySelectorAll('.dot')];
+  const countEl = document.getElementById('count')!;
+  function apply() {
+    let n = 0;
+    rows.forEach((r) => { const ok = matches(r); (r as HTMLElement).hidden = !ok; if (ok) n++; });
+    dots.forEach((d) => { (d as SVGElement).style.display = matches(d) ? '' : 'none'; });
+    countEl.textContent = `Showing ${n} of ${data.length} experiments`;
+  }
+  document.querySelectorAll('.fchip').forEach((b) =>
+    b.addEventListener('click', () => {
+      const pressed = b.getAttribute('aria-pressed') === 'true';
+      b.setAttribute('aria-pressed', String(!pressed));
+      apply();
+    }));
+  document.getElementById('filters-reset')!.addEventListener('click', () => {
+    document.querySelectorAll('.fchip').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    apply();
+  });
+
+  // ---------- sorting ----------
+  const tbody = document.querySelector('#exp-table tbody')!;
+  let sortKey = 'f1', sortDir = -1;
+  function sortBy(key: string) {
+    sortDir = key === sortKey ? -sortDir : (key === 'f1' ? -1 : 1);
+    sortKey = key;
+    [...rows].sort((a, b) => {
+      const av = a.getAttribute('data-' + (key === 'exp' ? 'exp' : key))!;
+      const bv = b.getAttribute('data-' + (key === 'exp' ? 'exp' : key))!;
+      let cmp: number;
+      if (key === 'f1') cmp = parseFloat(av) - parseFloat(bv);
+      else if (key === 'round') cmp = parseFloat(av) - parseFloat(bv);
+      else cmp = av.localeCompare(bv, undefined, { numeric: true });
+      return cmp * sortDir;
+    }).forEach((r) => tbody.appendChild(r));
+  }
+  document.querySelectorAll('.sort').forEach((b) =>
+    b.addEventListener('click', () => sortBy((b as HTMLElement).dataset.sort!)));
+
+  // ---------- comparison ----------
+  const selA = document.getElementById('cmp-a') as HTMLSelectElement;
+  const selB = document.getElementById('cmp-b') as HTMLSelectElement;
+  const out = document.getElementById('cmp-out')!;
+  const opt = (e: Exp) => `exp ${e.experimentId} · ${e.model.toUpperCase()} · ${e.f1.toFixed(4)}: ${e.description}`;
+  data.forEach((e, i) => {
+    selA.add(new Option(opt(e), String(i)));
+    selB.add(new Option(opt(e), String(i)));
+  });
+  selA.selectedIndex = data.findIndex((e) => e.experimentId === '10.1');
+  selB.selectedIndex = data.findIndex((e) => e.experimentId === '11.2');
+  function diffRow(label: string, a: string, b: string) {
+    const same = a === b;
+    return `<div class="dr ${same ? '' : 'dr--diff'}"><dt>${label}</dt><dd>${a}</dd><dd>${b}</dd></div>`;
+  }
+  function compare() {
+    const a = data[+selA.value], b = data[+selB.value];
+    if (!a || !b) return;
+    const delta = (b.f1 - a.f1);
+    const comparable = a.comparableWithFinal && b.comparableWithFinal && a.datasetScope === b.datasetScope;
+    const warn = !comparable
+      ? `<p class="cmp-warn">⚠ These runs are not directly comparable: they differ in dataset scope (${a.datasetScopeLabel} vs ${b.datasetScopeLabel}). Compare macro-F1 across runs only within the same scope.</p>`
+      : `<p class="cmp-ok">✓ Same dataset scope (${a.datasetScopeLabel}); directly comparable.</p>`;
+    out.innerHTML = `
+      ${warn}
+      <dl class="diff">
+        <div class="dr dr--head"><dt></dt><dd>A · exp ${a.experimentId}</dd><dd>B · exp ${b.experimentId}</dd></div>
+        ${diffRow('Model', a.model.toUpperCase(), b.model.toUpperCase())}
+        ${diffRow('Dataset', a.datasetScopeLabel, b.datasetScopeLabel)}
+        ${diffRow('Padding', a.padding, b.padding)}
+        ${diffRow('Augmentation', a.augmentation.join(', ') || 'none', b.augmentation.join(', ') || 'none')}
+        ${diffRow('Configuration', a.description, b.description)}
+        <div class="dr dr--f1"><dt>macro-F1</dt><dd>${a.f1.toFixed(4)}</dd><dd>${b.f1.toFixed(4)} <span class="delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta.toFixed(4)}</span></dd></div>
+      </dl>`;
+  }
+  selA.addEventListener('change', compare);
+  selB.addEventListener('change', compare);
+  apply(); compare();
+</script>
+
+<style>
+  .band-sunken { background: var(--bg-sunken); }
+  section h2 { margin-bottom: var(--sp-5); }
+
+  /* timeline */
+  .timeline { list-style: none; padding: 0; margin-top: var(--sp-5); }
+  .tl { display: grid; grid-template-columns: 3rem 1fr; gap: var(--sp-4); padding-bottom: var(--sp-5); }
+  .tl__rail { display: flex; flex-direction: column; align-items: center; }
+  .tl__num { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--accent-tint); color: var(--accent-strong); font-family: var(--font-display); font-size: var(--step-1); font-weight: 500; flex: none; }
+  .tl:not(:last-child) .tl__rail::after { content: ''; flex: 1; width: 2px; background: var(--rule); margin-top: 0.4rem; }
+  .tl__head { display: flex; align-items: baseline; gap: var(--sp-3); flex-wrap: wrap; }
+  .tl__head h3 { font-size: var(--step-1); }
+  .tl__cat { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); letter-spacing: 0.05em; text-transform: uppercase; }
+  .tl__q { color: var(--ink-2); margin: var(--sp-2) 0 var(--sp-3); max-width: 60ch; }
+  .tl__chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+  .chip { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-raised); border: 1px solid var(--rule); border-radius: 999px; padding: 0.2rem 0.6rem; text-decoration: none; color: var(--ink); }
+  .chip:hover { border-color: var(--accent); }
+  .chip__id { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .chip__f1 { font-family: var(--font-mono); font-size: var(--step--2); font-weight: 600; }
+  .chip__f1.is-headline { color: var(--accent-strong); }
+
+  /* filters */
+  .filters { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: flex-end; margin-top: var(--sp-4); }
+  .fgroup { border: none; padding: 0; margin: 0; }
+  .fgroup legend { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.35rem; padding: 0; }
+  .fopts { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .fchip { font-size: var(--step--1); padding: 0.3rem 0.7rem; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--bg-raised); color: var(--ink-2); cursor: pointer; }
+  .fchip:hover { border-color: var(--accent); }
+  .fchip[aria-pressed='true'] { background: var(--btn-bg); color: #fff; border-color: var(--btn-bg); }
+  .freset { align-self: flex-end; font-family: var(--font-mono); font-size: var(--step--2); background: none; border: none; color: var(--accent-strong); cursor: pointer; text-decoration: underline; padding: 0.3rem; }
+  .count { font-family: var(--font-mono); font-size: var(--step--1); color: var(--ink-3); margin-top: var(--sp-4); }
+
+  /* strip */
+  .strip { margin: var(--sp-3) 0 var(--sp-5); background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-5); }
+  .strip svg { width: 100%; height: auto; overflow: visible; }
+  .dot { transition: opacity 0.15s ease; }
+  .strip figcaption { font-size: var(--step--1); color: var(--ink-3); margin-top: var(--sp-3); }
+  .k-cnn { color: var(--cnn); } .k-passt { color: var(--passt); }
+
+  /* table */
+  #exp-table td.num, #exp-table th.num { text-align: right; }
+  #exp-table tr.is-headline { background: var(--accent-tint); }
+  .sort { background: none; border: none; font: inherit; font-weight: 600; color: var(--ink-2); cursor: pointer; padding: 0; }
+  .sort:hover { color: var(--accent-strong); }
+  .nb { font-family: var(--font-mono); font-size: var(--step--2); }
+  td.mono { font-family: var(--font-mono); }
+
+  /* compare */
+  .cmp-controls { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-4); }
+  .cmp-controls label { display: grid; gap: 0.3rem; font-family: var(--font-mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
+  .cmp-controls select { font: inherit; font-size: var(--step--1); padding: 0.5rem; border: 1px solid var(--rule-strong); border-radius: var(--radius); background: var(--bg-raised); color: var(--ink); max-width: min(90vw, 30rem); text-transform: none; letter-spacing: normal; }
+  .cmp-out { margin-top: var(--sp-5); }
+  .cmp-warn { background: var(--warn-tint); color: var(--warn); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius); border-left: 3px solid var(--warn); font-size: var(--step--1); }
+  .cmp-ok { color: var(--good); font-size: var(--step--1); }
+  .diff { margin-top: var(--sp-4); border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden; }
+  .dr { display: grid; grid-template-columns: 9rem 1fr 1fr; gap: var(--sp-3); padding: 0.6rem var(--sp-4); border-bottom: 1px solid var(--rule); font-size: var(--step--1); }
+  .dr:last-child { border-bottom: none; }
+  .dr dt { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .dr--head { background: var(--bg-sunken); font-weight: 600; }
+  .dr--head dd { font-family: var(--font-mono); font-size: var(--step--2); }
+  .dr--diff { background: color-mix(in srgb, var(--accent-tint) 50%, transparent); }
+  .dr--f1 { font-weight: 600; background: var(--bg-sunken); }
+  .delta.up { color: var(--good); } .delta.down { color: var(--warn); }
+  @media (max-width: 560px) { .dr { grid-template-columns: 1fr; gap: 0.1rem; } }
+</style>

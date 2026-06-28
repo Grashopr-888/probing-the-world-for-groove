@@ -1,0 +1,203 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import Cite from '../components/Cite.astro';
+import { LINKS, ASSETS, PUBLICATION, withBase } from '../lib/site';
+
+const thesisBib = `@mastersthesis{eriksen2025probing,
+  title   = {Probing the World for Groove: A Comparative Study of
+             Transfer Learning for Drum Audio Style Classification},
+  author  = {Eriksen, Trent},
+  school  = {Leiden University},
+  type    = {{MSc} thesis, Media Technology},
+  address = {Leiden, The Netherlands},
+  year    = {2025},
+  month   = jun
+}`;
+
+const lbdBib = `@inproceedings{eriksen2025comparative,
+  title     = {A Comparative Study of Transfer Learning for
+               Drum Audio Style Classification},
+  author    = {Eriksen, Trent and van der Heide, Edwin and Saunders, Robert},
+  booktitle = {Extended Abstracts for the Late-Breaking/Demo Session of the
+               26th Int. Society for Music Information Retrieval Conf. (ISMIR)},
+  address   = {Daejeon, South Korea},
+  year      = {2025}
+}`;
+---
+
+<Base path="/publication" title="ISMIR 2025" description="The ISMIR 2025 Late-Breaking Demo: abstract, paper, poster, video, citation, and acknowledgements.">
+  <PageHeader
+    eyebrow="ISMIR 2025 · Late-Breaking Demo"
+    title="From MSc thesis to ISMIR publication"
+    lede="The thesis was condensed into a Late-Breaking Demo presented at the 26th ISMIR conference in Daejeon, South Korea."
+  />
+
+  <!-- CONFERENCE PHOTO -->
+  <section>
+    <div class="container">
+      <div class="conf">
+        <img class="conf__photo" src={withBase('/figures/ismir-2025-author.webp')} width="825" height="1100"
+          alt="Trent Eriksen holding his ISMIR 2025 author badge in the conference hall, with the 26th ISMIR title screen behind him."
+          loading="lazy" decoding="async" />
+        <div class="conf__text">
+          <p class="eyebrow">Daejeon, South Korea · September 2025</p>
+          <h2>Presented at the 26th ISMIR</h2>
+          <p class="lede">
+            The Late-Breaking Demo was presented at the 26th International Society for Music
+            Information Retrieval Conference. The trip was supported by an ISMIR First-time Authors
+            Grant and research grants from Leiden University.
+          </p>
+          <a class="btn" href={LINKS.ismir} rel="noopener">Official ISMIR 2025 page</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THESIS vs LBD -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Two distinct works</p>
+      <div class="grid-2">
+        <article class="work">
+          <p class="work__kind">MSc Thesis</p>
+          <h2 class="work__title">{PUBLICATION.thesisTitle}</h2>
+          <dl class="meta">
+            <div><dt>Author</dt><dd>Trent Eriksen</dd></div>
+            <div><dt>Degree</dt><dd>{PUBLICATION.degree}</dd></div>
+            <div><dt>Supervisors</dt><dd>{PUBLICATION.supervisors.join(', ')}</dd></div>
+            <div><dt>Completed</dt><dd>{PUBLICATION.thesisDate}</dd></div>
+          </dl>
+          <a class="btn btn--primary" href={withBase(ASSETS.thesisPdf)}>Read the thesis (PDF)</a>
+        </article>
+        <article class="work">
+          <p class="work__kind">ISMIR 2025 Late-Breaking Demo</p>
+          <h2 class="work__title">{PUBLICATION.lbdTitle}</h2>
+          <dl class="meta">
+            <div><dt>Authors</dt><dd>Trent Eriksen, Edwin van der Heide, Robert Saunders</dd></div>
+            <div><dt>Affiliation</dt><dd>Leiden University Media Technology</dd></div>
+            <div><dt>Venue</dt><dd>{PUBLICATION.venue}</dd></div>
+            <div><dt>Location</dt><dd>{PUBLICATION.venueLocation}</dd></div>
+            <div><dt>License</dt><dd>{PUBLICATION.license}</dd></div>
+          </dl>
+          <div class="btn-row">
+            <a class="btn btn--primary" href={withBase(ASSETS.lbdPdf)}>LBD paper (PDF)</a>
+            <a class="btn" href={LINKS.ismir} rel="noopener">Official ISMIR page</a>
+          </div>
+        </article>
+      </div>
+      <p class="muted measure" style="margin-top: var(--sp-4)">
+        These are separate citations. The Late-Breaking Demo is a short extended abstract derived
+        from, but not identical to, the full thesis.
+      </p>
+    </div>
+  </section>
+
+  <!-- ABSTRACT -->
+  <section class="band-sunken">
+    <div class="container narrow">
+      <p class="eyebrow">Official abstract · ISMIR 2025 LBD</p>
+      <p class="abstract">
+        Research in drum classification often trends in two key directions: (1) audio-based
+        single-instrument classification, or (2) automatic drum transcription, which makes
+        exploration of drum-audio <em>style</em> compelling, especially in comparison to a CNN
+        trained on the GMD (Groove MIDI Dataset) with a pretrained transformer-based model, PaSST
+        (Patchout Audio Spectrogram Transformer), with frozen general-audio embeddings from AudioSet.
+        This comparison reveals the ways in which general audio knowledge can affect drum-audio style
+        classification. Experiments with model depth, augmentation, and padding show that PaSST with
+        these frozen embeddings reduces performance in terms of accuracy but reveals a robust feature
+        representation distinct from the CNN.
+      </p>
+    </div>
+  </section>
+
+  <!-- VIDEO -->
+  <section>
+    <div class="container narrow">
+      <p class="eyebrow">Presentation</p>
+      <h2>Watch the demo</h2>
+      <VideoEmbed id={LINKS.videoId} poster="/figures/video-poster.png" title="ISMIR 2025 LBD: Drum Audio Style Classification" />
+      <p class="muted" style="margin-top: var(--sp-3)">
+        Hosted on YouTube · also linked from the
+        <a href={LINKS.ismir} rel="noopener">official ISMIR 2025 program page</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- CITE -->
+  <section class="band-sunken">
+    <div class="container narrow">
+      <p class="eyebrow">Cite this work</p>
+      <h2>Citation &amp; BibTeX</h2>
+      <div class="cites">
+        <Cite
+          label="Thesis"
+          citation="Eriksen, T. (2025). Probing the World for Groove: A Comparative Study of Transfer Learning for Drum Audio Style Classification. MSc thesis, Media Technology, Leiden University."
+          bibtex={thesisBib}
+        />
+        <Cite
+          label="ISMIR 2025 LBD"
+          citation="Eriksen, T., van der Heide, E., & Saunders, R. (2025). A Comparative Study of Transfer Learning for Drum Audio Style Classification. Extended Abstracts for the Late-Breaking/Demo Session of the 26th ISMIR Conference, Daejeon, South Korea."
+          bibtex={lbdBib}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ACKNOWLEDGEMENTS -->
+  <section>
+    <div class="container narrow">
+      <p class="eyebrow">Acknowledgements &amp; support</p>
+      <h2>Grants</h2>
+      <ul class="grants">
+        <li><strong>ISMIR First-time Authors Grant</strong>, August 2025</li>
+        <li><strong>Creative Intelligence and Technology Grant</strong>, Leiden University, September 2025</li>
+        <li><strong>Leiden University Fund Research Grant</strong>, October 2025</li>
+      </ul>
+      <p class="muted measure" style="margin-top: var(--sp-4)">
+        With thanks to supervisors Edwin van der Heide and Robert Saunders, and to Leiden University
+        Media Technology.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .band-sunken { background: var(--bg-sunken); }
+  .narrow { max-width: 56rem; }
+
+  .conf { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-6); align-items: center; }
+  .conf__photo { width: auto; max-height: 360px; border-radius: var(--radius-lg); border: 1px solid var(--rule); box-shadow: var(--shadow-2); }
+  .conf__text h2 { margin: var(--sp-2) 0 var(--sp-3); }
+  .conf__text .btn { margin-top: var(--sp-4); }
+  @media (max-width: 720px) {
+    .conf { grid-template-columns: 1fr; gap: var(--sp-4); justify-items: start; }
+    .conf__photo { max-height: 300px; }
+  }
+  .measure { max-width: var(--measure); }
+  section h2 { margin-bottom: var(--sp-5); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); align-items: stretch; margin-top: var(--sp-4); }
+  @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
+  .work { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-5); display: flex; flex-direction: column; }
+  .work__kind { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-strong); }
+  .work__title { font-size: var(--step-1); margin: var(--sp-2) 0 var(--sp-4); }
+  .meta { display: grid; gap: 0; margin-bottom: var(--sp-5); flex: 1; }
+  .meta > div { display: grid; grid-template-columns: 8rem 1fr; gap: var(--sp-3); padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+  .meta dt { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .meta dd { font-size: var(--step--1); }
+  @media (max-width: 480px) { .meta > div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+  .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1rem; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--bg-raised); color: var(--ink); text-decoration: none; font-size: var(--step--1); font-weight: 540; align-self: flex-start; }
+  .btn:hover { border-color: var(--accent); }
+  .btn--primary { background: var(--btn-bg); color: #fff; border-color: var(--btn-bg); }
+  .btn--primary:hover { background: var(--accent-strong); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+
+  .abstract { font-family: var(--font-display); font-size: var(--step-1); line-height: 1.5; font-weight: 400; max-width: 62ch; }
+  .cites { display: grid; gap: var(--sp-5); }
+  .grants { list-style: none; padding: 0; display: grid; gap: var(--sp-3); }
+  .grants li { padding-left: 1.4rem; position: relative; }
+  .grants li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--accent); }
+</style>

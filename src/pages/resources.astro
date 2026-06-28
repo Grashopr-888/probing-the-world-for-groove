@@ -1,0 +1,203 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ModelBadge from '../components/ModelBadge.astro';
+import AudioExamples from '../components/AudioExamples.astro';
+import { LINKS, ASSETS, withBase } from '../lib/site';
+
+const repoBlob = (nb: string) => `${LINKS.archiveRepo}/blob/main/notebooks/${nb}`;
+
+const downloads = [
+  { label: 'MSc thesis', meta: 'PDF · 57 pp', href: withBase(ASSETS.thesisPdf) },
+  { label: 'ISMIR 2025 LBD paper', meta: 'PDF · 3 pp', href: withBase(ASSETS.lbdPdf) },
+  { label: 'Poster', meta: 'PDF', href: withBase(ASSETS.posterPdf) },
+  { label: 'Presentation video', meta: 'YouTube', href: LINKS.video },
+  { label: 'Experiment workbook', meta: 'XLSX · 17 sheets', href: withBase(ASSETS.workbook) },
+  { label: 'Notebook archive', meta: 'GitHub', href: LINKS.archiveRepo },
+];
+
+// Curated notebook index: highlights per theme. Full archive linked separately.
+const notebookGroups = [
+  {
+    title: 'Foundational & configuration',
+    items: [
+      { nb: 'GMD_CNN_prototype3.ipynb', model: 'cnn', exp: '1.1', note: 'Baseline CNN, rock styles' },
+      { nb: 'PaSST_setup2.ipynb', model: 'passt', exp: '1.2', note: 'Baseline PaSST, rock styles' },
+      { nb: 'PaSST_setup4.ipynb', model: 'passt', exp: '2.2', note: 'PaSST configuration' },
+    ],
+  },
+  {
+    title: 'Dataset exploration (low-data & full)',
+    items: [
+      { nb: 'GMD_CNN_prototype4.ipynb', model: 'cnn', exp: '3.1', note: 'GMD-mini (low-data)' },
+      { nb: 'PaSST_setup5.ipynb', model: 'passt', exp: '3.2', note: 'GMD-mini (low-data)' },
+      { nb: 'GMD_CNN_prototype5.ipynb', model: 'cnn', exp: '4.1', note: 'GMD-full' },
+      { nb: 'PaSST_setup6.ipynb', model: 'passt', exp: '4.2', note: 'GMD-full' },
+    ],
+  },
+  {
+    title: 'Model depth & patchout',
+    items: [
+      { nb: 'PaSST_setup6_4.ipynb', model: 'passt', exp: '6.1', note: 't-SNE & time patchout' },
+      { nb: 'PaSST_setup6_8.ipynb', model: 'passt', exp: '8.3', note: 'Best PaSST head (4-layer MLP)' },
+      { nb: 'GMD_CNN_prototype6_2.ipynb', model: 'cnn', exp: '9.2', note: 'Best CNN depth (7-conv)' },
+    ],
+  },
+  {
+    title: 'Augmentation & padding',
+    items: [
+      { nb: 'GMD_CNN_prototype6_4.ipynb', model: 'cnn', exp: '10.1', note: 'Final CNN, noise + room sim' },
+      { nb: 'PaSST_setup6_16.ipynb', model: 'passt', exp: '11.2', note: 'Final PaSST, reflection padding' },
+      { nb: 'GMD_CNN_prototype6_6.ipynb', model: 'cnn', exp: '11.3', note: 'CNN + reflection padding' },
+    ],
+  },
+  {
+    title: 'Representation analysis',
+    items: [
+      { nb: 'GMD_CNN_prototype5_3_tSNE.ipynb', model: 'cnn', exp: '', note: 'CNN t-SNE & centroids' },
+      { nb: 'GMD_prototype_preprocessing.ipynb', model: null, exp: '', note: 'Data preprocessing pipeline' },
+    ],
+  },
+];
+---
+
+<Base path="/resources" title="Resources" description="Papers, data, the curated notebook index, dataset attribution, citation, and reproducibility notes.">
+  <PageHeader
+    eyebrow="Resources"
+    title="Papers, data, notebooks & reproducibility"
+    lede="Everything needed to read, cite, inspect, or build on the work: the publication artifacts, the experiment workbook, and a curated index into the research notebooks."
+  />
+
+  <!-- DOWNLOADS -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Downloads &amp; links</p>
+      <h2>Publication artifacts</h2>
+      <div class="dl-grid">
+        {downloads.map((d) => (
+          <a class="dl" href={d.href} rel="noopener">
+            <span class="dl__label">{d.label}</span>
+            <span class="dl__meta">{d.meta}</span>
+            <span class="dl__arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIO EXAMPLES -->
+  <section class="band-sunken">
+    <div class="container">
+      <p class="eyebrow">Hear the data</p>
+      <h2>Two-bar grooves across styles</h2>
+      <p class="lede measure">
+        A handful of rendered GMD clips, the same kind of two-bar audio the models classify. Style
+        and tempo come from the dataset annotations; no model predictions are shown.
+      </p>
+      <AudioExamples />
+      <p class="muted" style="margin-top: var(--sp-4)">
+        Excerpts from the Groove MIDI Dataset (Google / Magenta, CC BY 4.0), 16 kHz mono.
+      </p>
+    </div>
+  </section>
+
+  <!-- NOTEBOOK INDEX -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Curated notebook index</p>
+      <h2>Read the experiments at the source</h2>
+      <p class="lede measure">
+        Selected notebooks grouped by theme, each linking to the research repository. The
+        <a href={withBase('/experiments')}>Experiments explorer</a> maps every one of the 34
+        experiments to its notebook.
+      </p>
+      <div class="nb-groups">
+        {notebookGroups.map((g) => (
+          <div class="nb-group">
+            <h3>{g.title}</h3>
+            <ul>
+              {g.items.map((it) => (
+                <li>
+                  <a href={repoBlob(it.nb)} rel="noopener" class="nb-name">{it.nb}</a>
+                  <span class="nb-tags">
+                    {it.model && <ModelBadge model={it.model as 'cnn' | 'passt'} />}
+                    {it.exp && <span class="nb-exp">exp {it.exp}</span>}
+                  </span>
+                  <span class="nb-note">{it.note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p class="muted" style="margin-top: var(--sp-5)">
+        Full archive: <a href={LINKS.archiveRepo} rel="noopener">all notebooks on GitHub →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ATTRIBUTION & REPRODUCIBILITY -->
+  <section>
+    <div class="container">
+      <div class="grid-2">
+        <div class="prose">
+          <p class="eyebrow">Dataset attribution</p>
+          <h2>Groove MIDI Dataset</h2>
+          <p>
+            All audio derives from the <a href={LINKS.gmd}>Groove MIDI Dataset</a> by Google /
+            Magenta, released under <strong>CC BY 4.0</strong>. Any audio examples on this site are
+            short excerpts used with attribution; the full dataset is not redistributed here.
+          </p>
+          <p class="muted">
+            Gillick, J., Roberts, A., Engel, J., Eck, D., &amp; Bamman, D. (2019). Learning to Groove
+            with Inverse Sequence Transformations. ICML.
+          </p>
+        </div>
+        <div class="prose">
+          <p class="eyebrow">Reproducibility</p>
+          <h2>How the work runs</h2>
+          <ul class="repro">
+            <li>Notebooks were developed and run in Google Colab (GPU).</li>
+            <li>Key libraries: <a href={LINKS.passt}>passt_hear21</a>, <a href={LINKS.drumClassification}>DrumClassification</a> (CNN basis), <a href={LINKS.audiomentations}>audiomentations</a>.</li>
+            <li>This website builds from <strong>saved notebook outputs</strong>, and never retrains models or re-executes notebooks.</li>
+            <li>Three notebooks were restored from local backups after surfacing as truncated in the repo (see the audit log).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .band-sunken { background: var(--bg-sunken); }
+  .measure { max-width: var(--measure); }
+  section h2 { margin-bottom: var(--sp-4); }
+
+  .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-top: var(--sp-4); }
+  @media (max-width: 820px) { .dl-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .dl-grid { grid-template-columns: 1fr; } }
+  .dl {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.2rem var(--sp-3);
+    padding: var(--sp-4); background: var(--bg-raised); border: 1px solid var(--rule);
+    border-radius: var(--radius-lg); text-decoration: none; color: var(--ink);
+    transition: border-color 0.15s ease, transform 0.12s ease;
+  }
+  .dl:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .dl__label { font-weight: 600; grid-column: 1; }
+  .dl__meta { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); grid-column: 1; }
+  .dl__arrow { grid-column: 2; grid-row: 1 / 3; color: var(--accent-strong); font-size: var(--step-1); }
+
+  .nb-groups { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5) var(--sp-6); margin-top: var(--sp-5); }
+  @media (max-width: 760px) { .nb-groups { grid-template-columns: 1fr; } }
+  .nb-group h3 { font-size: var(--step-0); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin-bottom: var(--sp-3); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--rule-strong); }
+  .nb-group ul { list-style: none; padding: 0; display: grid; gap: var(--sp-3); }
+  .nb-group li { display: grid; gap: 0.2rem; }
+  .nb-name { font-family: var(--font-mono); font-size: var(--step--1); word-break: break-all; }
+  .nb-tags { display: flex; align-items: center; gap: 0.5rem; }
+  .nb-exp { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
+  .nb-note { font-size: var(--step--1); color: var(--ink-2); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-7); margin-top: var(--sp-4); }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; gap: var(--sp-6); } }
+  .repro { padding-left: 1.1em; display: grid; gap: var(--sp-2); }
+</style>

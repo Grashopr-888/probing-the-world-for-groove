@@ -1,0 +1,144 @@
+{
+  "cnn": {
+    "model": "cnn",
+    "expA": "GMD_CNN_prototype6_2",
+    "expB": "GMD_CNN_prototype6_7",
+    "description": "A = CNN 7 Conv Layers , Zero padding B= CNN 7 Conv Layers , Reflection padding",
+    "f1A": 0.8944,
+    "f1B": 0.8736,
+    "meanPrimaryShift": 94.66,
+    "topPrimary": [
+      {
+        "style": "afrobeat",
+        "shift": 183.57
+      },
+      {
+        "style": "hiphop",
+        "shift": 142.44
+      },
+      {
+        "style": "blues",
+        "shift": 127.08
+      },
+      {
+        "style": "country",
+        "shift": 120.3
+      },
+      {
+        "style": "dance",
+        "shift": 114.33
+      },
+      {
+        "style": "funk",
+        "shift": 107.12
+      },
+      {
+        "style": "middleeastern",
+        "shift": 93.79
+      },
+      {
+        "style": "rock",
+        "shift": 90.29
+      },
+      {
+        "style": "punk",
+        "shift": 88.22
+      },
+      {
+        "style": "reggae",
+        "shift": 83.99
+      }
+    ],
+    "interventionBaseline": "zero padding",
+    "interventionShifts": [
+      {
+        "label": "Reflection padding",
+        "shift": 94.66
+      },
+      {
+        "label": "Circular padding",
+        "shift": 89.89
+      },
+      {
+        "label": "Time stretch",
+        "shift": 86.0
+      },
+      {
+        "label": "Noise + room",
+        "shift": 84.53
+      },
+      {
+        "label": "Noise, room + reflection",
+        "shift": 78.87
+      }
+    ]
+  },
+  "passt": {
+    "model": "passt",
+    "expA": "PaSST_setup6_16",
+    "expB": "PaSST_setup6_14",
+    "description": "A = reflection padding , B= zero padding time stretch",
+    "f1A": 0.8752,
+    "f1B": 0.8446,
+    "meanPrimaryShift": 8.07,
+    "topPrimary": [
+      {
+        "style": "punk",
+        "shift": 9.08
+      },
+      {
+        "style": "gospel",
+        "shift": 8.9
+      },
+      {
+        "style": "pop",
+        "shift": 8.87
+      },
+      {
+        "style": "soul",
+        "shift": 8.62
+      },
+      {
+        "style": "middleeastern",
+        "shift": 8.55
+      },
+      {
+        "style": "country",
+        "shift": 8.49
+      },
+      {
+        "style": "afrobeat",
+        "shift": 8.23
+      },
+      {
+        "style": "reggae",
+        "shift": 8.21
+      },
+      {
+        "style": "rock",
+        "shift": 8.2
+      },
+      {
+        "style": "blues",
+        "shift": 8.12
+      }
+    ],
+    "interventionBaseline": "reflection padding",
+    "interventionShifts": [
+      {
+        "label": "Time stretch",
+        "shift": 8.07
+      },
+      {
+        "label": "Deeper head",
+        "shift": 8.07
+      },
+      {
+        "label": "Circular padding",
+        "shift": 6.55
+      }
+    ]
+  },
+  "note": "CNN and PaSST embeddings occupy different coordinate systems with different distance scales. The two series below are within-model only and share no axis.",
+  "scaleRatio": 11.7
+}
