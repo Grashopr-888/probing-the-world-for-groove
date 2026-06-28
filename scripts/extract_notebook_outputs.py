@@ -7,11 +7,12 @@ Usage: python3 scripts/extract_notebook_outputs.py
 Outputs: scratchpad staging PNGs + a printed manifest of (notebook, cell, tags).
 Curated figures are then copied to public/figures/ with a manifest by figures_manifest.
 """
-import nbformat, base64, sys
+import nbformat, base64, sys, os
 from pathlib import Path
 
-RESEARCH = Path("/Users/trent/thesis-github-pages/research")
-STAGE = Path("/private/tmp/claude-501/-Users-trent-windchime/f7cff0a2-4289-4a7e-90c4-62b91fba6e62/scratchpad/figures")
+# Sibling research repo by default; override with RESEARCH_DIR / STAGE_DIR.
+RESEARCH = Path(os.environ.get("RESEARCH_DIR", Path(__file__).resolve().parents[2] / "research"))
+STAGE = Path(os.environ.get("STAGE_DIR", "/tmp/nb_figures"))
 STAGE.mkdir(parents=True, exist_ok=True)
 
 TARGETS = [

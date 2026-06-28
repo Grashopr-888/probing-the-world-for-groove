@@ -11,11 +11,12 @@ Source cells (px.scatter coloured by primary style, perplexities 5/15/30/40/50/7
 Output (labels stored once; xy per perplexity per point):
   public/data/embeddings-passt.json, public/data/embeddings-cnn.json
 """
-import nbformat, json, re
+import nbformat, json, re, os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-RESEARCH = Path("/Users/trent/thesis-github-pages/research")
+# Sibling research repo by default; override with RESEARCH_DIR.
+RESEARCH = Path(os.environ.get("RESEARCH_DIR", ROOT.parent / "research"))
 OUT = ROOT / "public" / "data"
 PERPS = [5, 15, 30, 40, 50, 75, 100]
 SOURCES = {
