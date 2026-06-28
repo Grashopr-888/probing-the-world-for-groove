@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import ModelBadge from '../components/ModelBadge.astro';
 import AudioExamples from '../components/AudioExamples.astro';
+import references from '../data/references.json';
 import { LINKS, ASSETS, withBase } from '../lib/site';
 
 const repoBlob = (nb: string) => `${LINKS.archiveRepo}/blob/main/notebooks/${nb}`;
@@ -166,12 +167,38 @@ const notebookGroups = [
       </div>
     </div>
   </section>
+
+  <!-- REFERENCES -->
+  <section class="band-sunken">
+    <div class="container">
+      <p class="eyebrow">Bibliography</p>
+      <h2>References cited in the thesis</h2>
+      <p class="lede measure">
+        The works cited in <em>Probing the World for Groove</em>, each linked to the paper,
+        preprint, or repository.
+      </p>
+      <ol class="refs">
+        {references.map((r) => (
+          <li>
+            <span class="refs__a">{r.authors}.</span>{' '}
+            <a href={r.url} rel="noopener">{r.title}</a>.{' '}
+            <span class="refs__v">{r.venue}, {r.year}.</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
 </Base>
 
 <style>
   .band-sunken { background: var(--bg-sunken); }
   .measure { max-width: var(--measure); }
   section h2 { margin-bottom: var(--sp-4); }
+  .refs { columns: 2; column-gap: var(--sp-7); padding-left: 1.3em; margin-top: var(--sp-5); font-size: var(--step--1); }
+  .refs li { margin-bottom: var(--sp-3); break-inside: avoid; line-height: var(--leading-snug); }
+  .refs__a { color: var(--ink-2); }
+  .refs__v { color: var(--ink-3); font-family: var(--font-mono); font-size: var(--step--2); }
+  @media (max-width: 700px) { .refs { columns: 1; } }
 
   .dl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-top: var(--sp-4); }
   @media (max-width: 820px) { .dl-grid { grid-template-columns: repeat(2, 1fr); } }
