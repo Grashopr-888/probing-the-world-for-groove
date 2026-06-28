@@ -8,6 +8,7 @@ and ISMIR 2025 Late-Breaking Demo.
 📄 **ISMIR 2025 LBD:** https://ismir2025program.ismir.net/lbd_456.html
 🎥 **Talk:** https://youtu.be/f_nIl5qMxlY
 💻 **Research code & notebooks:** https://github.com/Grashopr-888/A-comparative-study-of-Transfer-Learning-for-Drum-audio-Style-Classification-
+🎓 **Author (Google Scholar):** https://scholar.google.com/citations?user=mUE3lGAAAAAJ
 
 ---
 

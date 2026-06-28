@@ -58,6 +58,7 @@ export const LINKS = {
   archiveRepo: 'https://github.com/Grashopr-888/drum-style-thesis-notebooks',
   repo: 'https://github.com/Grashopr-888/A-comparative-study-of-Transfer-Learning-for-Drum-audio-Style-Classification-',
   ismir: 'https://ismir2025program.ismir.net/lbd_456.html',
+  scholar: 'https://scholar.google.com/citations?user=mUE3lGAAAAAJ',
   video: 'https://youtu.be/f_nIl5qMxlY',
   videoId: 'f_nIl5qMxlY',
   // external references
