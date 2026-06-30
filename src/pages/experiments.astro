@@ -32,6 +32,7 @@ const FILTERS = [
   { key: 'scope', label: 'Dataset scope', opts: [['gmd-full', 'GMD-full'], ['gmd-mini', 'GMD-mini'], ['rock-only', 'Rock-only']] },
   { key: 'padding', label: 'Padding', opts: [['zero', 'Zero'], ['reflection', 'Reflection'], ['circular', 'Circular']] },
   { key: 'aug', label: 'Augmentation', opts: [['none', 'None'], ['gaussian-noise', 'Gaussian'], ['room-simulation', 'Room sim'], ['time-stretch', 'Time stretch']] },
+  { key: 'gpu', label: 'GPU', opts: [['A100', 'A100'], ['L4', 'L4']] },
 ];
 const dataAttrs = (e: typeof experiments[number]) => ({
   'data-exp': e.experimentId,
@@ -40,6 +41,7 @@ const dataAttrs = (e: typeof experiments[number]) => ({
   'data-scope': e.datasetScope,
   'data-padding': e.padding,
   'data-aug': e.augmentation.length ? e.augmentation.join(',') : 'none',
+  'data-gpu': e.gpu ?? '',
   'data-f1': String(e.f1),
   'data-round': String(e.round),
 });
@@ -139,6 +141,7 @@ const dataAttrs = (e: typeof experiments[number]) => ({
               <th>Dataset</th>
               <th>Configuration</th>
               <th class="num"><button class="sort" data-sort="f1">macro-F1 ▾</button></th>
+              <th><button class="sort" data-sort="gpu">GPU</button></th>
               <th>Notebook</th>
             </tr>
           </thead>
@@ -151,6 +154,7 @@ const dataAttrs = (e: typeof experiments[number]) => ({
                 <td>{e.datasetScopeLabel}</td>
                 <td>{e.description}</td>
                 <td class="num mono">{fmt(e.f1)}</td>
+                <td>{e.gpu ? <span class={`gpu gpu--${e.gpu.toLowerCase()}`}>{e.gpu}</span> : <span class="gpu-na" title="GPU not recorded in this notebook">n/a</span>}</td>
                 <td><a href={repoBlob(e.notebook)} rel="noopener" class="nb">{e.notebook.replace('.ipynb', '')}</a></td>
               </tr>
             ))}
@@ -181,9 +185,10 @@ const dataAttrs = (e: typeof experiments[number]) => ({
     experimentId: string; round: number; model: 'cnn' | 'passt'; f1: number;
     description: string; datasetScopeLabel: string; datasetScope: string;
     padding: string; augmentation: string[]; comparableWithFinal: boolean; notebook: string;
+    gpu: string | null;
   };
   const data: Exp[] = JSON.parse(document.getElementById('exp-json')!.textContent || '[]');
-  const GROUPS = ['model', 'category', 'scope', 'padding', 'aug'];
+  const GROUPS = ['model', 'category', 'scope', 'padding', 'aug', 'gpu'];
 
   // ---------- filtering ----------
   const activeFor = (g: string) =>
@@ -287,6 +292,7 @@ const dataAttrs = (e: typeof experiments[number]) => ({
         ${diffRow('Padding', a.padding, b.padding)}
         ${diffRow('Augmentation', a.augmentation.join(', ') || 'none', b.augmentation.join(', ') || 'none')}
         ${diffRow('Configuration', a.description, b.description)}
+        ${diffRow('GPU', a.gpu || 'n/a', b.gpu || 'n/a')}
         <div class="dr dr--f1"><dt>macro-F1</dt><dd>${a.f1.toFixed(4)}</dd><dd>${b.f1.toFixed(4)} <span class="delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta.toFixed(4)}</span></dd></div>
       </dl>`;
   }
@@ -341,6 +347,9 @@ const dataAttrs = (e: typeof experiments[number]) => ({
   .sort:hover { color: var(--accent-strong); }
   .nb { font-family: var(--font-mono); font-size: var(--step--2); }
   td.mono { font-family: var(--font-mono); }
+  .gpu { display: inline-block; font-family: var(--font-mono); font-size: var(--step--2); padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--rule-strong); color: var(--ink-2); white-space: nowrap; }
+  .gpu--a100 { border-color: color-mix(in srgb, var(--accent) 50%, var(--rule-strong)); color: var(--accent-strong); }
+  .gpu-na { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-3); }
 
   /* compare */
   .cmp-controls { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-4); }

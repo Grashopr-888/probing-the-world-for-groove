@@ -60,6 +60,8 @@
 | 33 | Primary metric | macro-F1 | LBD §2 | ✅ |
 | 34 | Research question (core) | effect of pretrained general-audio embeddings (PaSST) vs baseline CNN for drum audio style classification | LBD §1; TH | ✅ (exact thesis RQ wording ⏳ to lift at build) |
 | 35 | GMD metadata available | BPM, beat/fill type, time signature | TH p3 | ✅ |
+| 36 | Training hardware | Google Colab; NVIDIA A100 / L4 (by runtime availability); Apr–May 2025; ≈3–8 h per run depending on GPU type | TH (Methodology); NB device logs | ✅ |
+| 37 | Per-experiment GPU | A100 ×15 / L4 ×15; 4 early CNN runs (1.1, 3.1, 4.1, 5.3) not recorded. Resolved per notebook from the logged CUDA device (PyTorch-Lightning "You are using a CUDA device ('NVIDIA …')") and author training notes; re-runs spanning both GPUs labelled by the final reported run. Stored as `gpu` in experiments.json via `GPU_MAP` in `scripts/extract_experiments.py`. | NB device logs + notes | ✅ |
 
 ## Comparability guardrails (enforce in the experiments explorer)
 

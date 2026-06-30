@@ -41,6 +41,23 @@ SCOPE_LABEL = {"rock-only": "Rock-only (narrow)", "gmd-mini": "GMD-mini (low-dat
 
 HEADLINE = {("cnn", "10.1"), ("passt", "11.2")}
 
+# Per-experiment training GPU. Not in the workbook: derived offline (one-time) from each
+# notebook's logged CUDA device (PyTorch Lightning "You are using a CUDA device ('NVIDIA …')")
+# and/or the author's in-notebook training notes. None = not recorded in that notebook.
+# Runs that spanned both GPUs (a Colab restart) are labelled by the final reported run, per
+# the author's note. See docs/content-provenance.md.
+GPU_MAP = {
+    "1.1": None,   "1.2": "L4",   "2.1": "L4",   "2.2": "L4",
+    "3.1": None,   "3.2": "L4",   "4.1": None,   "4.2": "L4",
+    "5.1": "A100", "5.2": "L4",   "5.3": None,   "5.4": "A100",
+    "6.1": "L4",   "6.2": "L4",   "7.1": "L4",
+    "8.1": "L4",   "8.2": "A100", "8.3": "A100", "8.4": "A100",
+    "8.5": "A100", "8.6": "A100", "8.7": "A100",
+    "9.1": "L4",   "9.2": "A100", "9.3": "A100",
+    "10.1": "A100","10.2": "A100","10.3": "A100","10.4": "A100",
+    "11.1": "A100","11.2": "L4",  "11.3": "L4",  "11.4": "L4", "11.5": "L4",
+}
+
 
 def norm_notebook(s: str) -> str:
     s = (s or "").strip()
@@ -110,6 +127,7 @@ def main():
             "model": model,
             "f1": f1,
             "notebook": notebook,
+            "gpu": GPU_MAP.get(exp_id),
             "description": desc,
             "category": category,
             "roundTitle": title,
