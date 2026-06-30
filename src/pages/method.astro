@@ -207,6 +207,16 @@ const padEffect = [
         <div><dt>Epochs</dt><dd>50</dd></div>
         <div><dt>Early stopping</dt><dd>patience 10</dd></div>
       </dl>
+      <dl class="spec spec--row spec--compute">
+        <div><dt>GPU</dt><dd>A100 / L4</dd></div>
+        <div><dt>Compute</dt><dd>Google Colab</dd></div>
+        <div><dt>Training time</dt><dd>3 to 8 hours</dd></div>
+      </dl>
+      <p class="muted measure" style="margin-top: var(--sp-3)">
+        Models were trained in Google Colab on NVIDIA A100 or L4 GPUs across April and May 2025;
+        the choice between the two followed runtime availability. Each run took roughly 3 to 8
+        hours depending on GPU type and configuration.
+      </p>
       <p class="muted measure" style="margin-top: var(--sp-4)">
         Augmentation (Gaussian noise, room simulation, time stretch via
         <a href={LINKS.audiomentations}>audiomentations</a>) and padding modes (zeros, reflection,
@@ -342,6 +352,8 @@ const padEffect = [
   .spec--row > div { flex-direction: column; gap: 0.2rem; border-bottom: none; border-top: 2px solid var(--accent); padding-top: var(--sp-3); }
   .spec--row dd { text-align: left; font-size: var(--step-1); font-family: var(--font-display); }
   @media (max-width: 640px) { .spec--row { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); } }
+  .spec--compute { grid-template-columns: repeat(3, 1fr); margin-top: var(--sp-4); }
+  @media (max-width: 640px) { .spec--compute { grid-template-columns: repeat(2, 1fr); } }
 
   .vs-card { background: var(--bg-raised); border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: var(--sp-5); }
   .vs-card--cnn { border-top: 3px solid var(--cnn); }

@@ -158,7 +158,7 @@ const notebookGroups = [
           <p class="eyebrow">Reproducibility</p>
           <h2>How the work runs</h2>
           <ul class="repro">
-            <li>Notebooks were developed and run in Google Colab (GPU).</li>
+            <li>Notebooks were developed and run in Google Colab on NVIDIA A100 or L4 GPUs (assigned by runtime availability); each experiment took roughly 3 to 8 hours depending on GPU type.</li>
             <li>Key libraries: <a href={LINKS.passt}>passt_hear21</a>, <a href={LINKS.drumClassification}>DrumClassification</a> (CNN basis), <a href={LINKS.audiomentations}>audiomentations</a>.</li>
             <li>This website builds from <strong>saved notebook outputs</strong>, and never retrains models or re-executes notebooks.</li>
             <li>Three notebooks were restored from local backups after surfacing as truncated in the repo (see the audit log).</li>
