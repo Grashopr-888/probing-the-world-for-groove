@@ -1,14 +1,25 @@
 # Probing the World for Groove
 
-**A comparative study of transfer learning for drum-audio style classification.**
-The research website for Trent Eriksen's MSc Media Technology thesis (Leiden University)
-and ISMIR 2025 Late-Breaking Demo.
+**Trent Eriksen** · MSc Media Technology, Leiden University (LIACS)<br>
+The research website for the MSc thesis and the ISMIR 2025 Late-Breaking Demo, *A Comparative Study of Transfer
+Learning for Drum Audio Style Classification*
 
-🔗 **Website:** https://grashopr-888.github.io/probing-the-world-for-groove/
-📄 **ISMIR 2025 LBD:** https://ismir2025program.ismir.net/lbd_456.html
-🎥 **Talk:** https://youtu.be/f_nIl5qMxlY
-💻 **Research code & notebooks:** https://github.com/Grashopr-888/A-comparative-study-of-Transfer-Learning-for-Drum-audio-Style-Classification-
-🎓 **Author (Google Scholar):** https://scholar.google.com/citations?user=mUE3lGAAAAAJ
+[![Website](https://img.shields.io/badge/website-live-2E7D32)](https://grashopr-888.github.io/probing-the-world-for-groove/)
+[![ISMIR 2025 page](https://img.shields.io/badge/ISMIR%202025-page-2B6CB0)](https://ismir2025program.ismir.net/lbd_456.html)
+[![Video](https://img.shields.io/badge/video-YouTube-c4302b)](https://youtu.be/f_nIl5qMxlY)
+[![Research repo](https://img.shields.io/badge/research%20repo-paper%20%C2%B7%20thesis%20%C2%B7%20notebooks-B07000)](https://github.com/Grashopr-888/A-comparative-study-of-Transfer-Learning-for-Drum-audio-Style-Classification-)
+[![Project page](https://img.shields.io/badge/project-page-E6B44C)](https://grashopr-888.github.io/current-projects/projects/groove/)
+[![Code licence](https://img.shields.io/badge/code-MIT-22262E)](LICENSE)
+[![Google Scholar](https://img.shields.io/badge/Google%20Scholar-author-4285F4)](https://scholar.google.com/citations?user=mUE3lGAAAAAJ)
+
+<p align="center">
+  <a href="https://youtu.be/f_nIl5qMxlY"><img src="public/figures/video-poster.png" width="760"
+     alt="Title slide: Probing the World for Groove, a comparative study of transfer learning for drum audio style classification. Trent Eriksen, ISMIR 2025 LBD presentation, Universiteit Leiden"></a>
+  <br><sub><a href="https://youtu.be/f_nIl5qMxlY">Watch the ISMIR 2025 presentation</a></sub>
+</p>
+
+> The thesis now also lives on [Current Projects](https://grashopr-888.github.io/current-projects/projects/groove/),
+> alongside the author's other work. This repository is the original standalone site, still online.
 
 ---
 
@@ -41,7 +52,7 @@ fine-grained drum-style distinctions.
 
 | | CNN | PaSST |
 | --- | --- | --- |
-| Input | log-mel, 16 kHz | 32 kHz, padded to 10 s |
+| Input | mel spectrogram, 16 kHz | 32 kHz, padded to 10 s |
 | Backbone | VGG-style, **trained from scratch** | Patchout AST, **frozen** (AudioSet) |
 | Classifier | 7 convolutional layers | 4-layer MLP head |
 | Inductive bias | local spectro-temporal | transferred general-audio |
